@@ -8,6 +8,7 @@ import { BIZ, CLIENTS, PROJECTS, ROOM_IDS, WEEK, type Content, type RoomId, type
 const PITCH_WA = 'https://wa.me/601151198497'
 const wa = (t: string) => `https://wa.me/${BIZ.wa}?text=${encodeURIComponent(t)}`
 const IDS = ['work', 'projects', 'services', 'awards', 'brief', 'contact']
+const reduced = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function WaIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
@@ -15,6 +16,12 @@ function WaIcon({ className = 'h-5 w-5' }: { className?: string }) {
       <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" />
     </svg>
   )
+}
+function PhoneIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1.2a11 11 0 0 0 5.3 5.3l1.2-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>
+}
+function Arrow({ dir = 'right' }: { dir?: 'left' | 'right' }) {
+  return <svg viewBox="0 0 20 20" className={`h-4 w-4 ${dir === 'left' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" /></svg>
 }
 
 function Eyebrow({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
@@ -24,8 +31,8 @@ function Eyebrow({ children, dark = false }: { children: ReactNode; dark?: boole
 function Logo({ light = false }: { light?: boolean }) {
   return (
     <span className={`flex items-center gap-3 ${light ? 'text-stone' : 'text-forest'}`}>
-      <span className="font-display text-[26px] leading-none tracking-[0.02em]">B<span className={light ? 'text-brass' : 'text-brass-ink'}>&amp;</span>N</span>
-      <span className={`border-l pl-3 text-[9.5px] font-semibold uppercase leading-[1.35] tracking-[0.28em] ${light ? 'border-stone/25 text-stone/80' : 'border-forest/20 text-moss'}`}>Design<br />Associate</span>
+      <span className="font-display text-[27px] leading-none tracking-[-0.01em]">B<span className={`italic ${light ? 'text-brass' : 'text-brass-ink'}`}>&amp;</span>N</span>
+      <span className={`border-l pl-3 text-[9.5px] font-semibold uppercase leading-[1.35] tracking-[0.26em] ${light ? 'border-stone/25 text-stone/80' : 'border-forest/20 text-moss'}`}>Design<br />Associate</span>
     </span>
   )
 }
@@ -45,22 +52,22 @@ function StatusPill({ dark = false }: { dark?: boolean }) {
 function Header({ active, onMenu, menuOpen, btnRef }: { active: string; onMenu: () => void; menuOpen: boolean; btnRef: React.RefObject<HTMLButtonElement | null> }) {
   const { c, lang, setLang } = useI18n<Content>()
   return (
-    <header className="sticky top-0 z-40 border-b border-forest/10 bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-5 sm:px-8">
-        <a href="#top" className="tap flex items-center rounded-lg"><Logo /></a>
-        <nav aria-label={c.a11y.main} className="hidden items-center gap-6 xl:flex">
+    <header className="sticky top-0 z-40 border-b border-stone/10 bg-forest-deep/95 text-stone backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-5 sm:px-8 lg:h-16">
+        <a href="#top" className="tap flex items-center rounded-lg"><Logo light /></a>
+        <nav aria-label={c.a11y.main} className="hidden items-center gap-7 lg:flex">
           {c.nav.map(([id, l]) => (
-            <a key={id} href={`#${id}`} aria-current={active === id ? 'true' : undefined} className={`nav-link py-2 text-[14.5px] font-medium transition hover:text-forest ${active === id ? 'text-forest' : 'text-moss'}`}>{l}</a>
+            <a key={id} href={`#${id}`} aria-current={active === id ? 'true' : undefined} className={`nav-link py-3 text-[14.5px] transition hover:text-stone ${active === id ? 'text-stone' : 'text-stone/75'}`}>{l}</a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <button data-lang-toggle onClick={() => setLang(lang === 'en' ? 'ms' : 'en')} aria-label={c.langAria} className="tap rounded-full border border-forest/20 px-3 text-xs font-bold tracking-wider text-forest transition hover:border-forest">{c.langLabel}</button>
-          <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap hidden items-center gap-2 rounded-full bg-forest px-4 text-sm font-semibold text-stone transition hover:bg-forest-3 sm:inline-flex"><WaIcon className="h-4 w-4" />{c.waCta}</a>
-          <button ref={btnRef} onClick={onMenu} aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label={menuOpen ? c.a11y.menuClose : c.a11y.menuOpen} className="tap grid place-items-center rounded-full border border-forest/20 xl:hidden">
+          <button data-lang-toggle onClick={() => setLang(lang === 'en' ? 'ms' : 'en')} aria-label={c.langAria} className="tap rounded-full border border-stone/20 px-3 text-xs font-semibold tracking-wider text-stone transition hover:border-brass">{c.langLabel}</button>
+          <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap hidden items-center gap-2 rounded-full bg-brass px-4 text-sm font-semibold text-forest-deep transition hover:bg-brass-light sm:inline-flex"><WaIcon className="h-4 w-4" />{c.waCta}</a>
+          <button ref={btnRef} onClick={onMenu} aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label={menuOpen ? c.a11y.menuClose : c.a11y.menuOpen} className="tap grid place-items-center rounded-full border border-stone/20 lg:hidden">
             <span className="relative block h-3 w-5" aria-hidden>
-              <span className={`absolute left-0 h-[2px] w-5 bg-forest transition ${menuOpen ? 'top-[5px] rotate-45' : 'top-0'}`} />
-              <span className={`absolute left-0 top-[5px] h-[2px] w-5 bg-forest transition ${menuOpen ? 'opacity-0' : ''}`} />
-              <span className={`absolute left-0 h-[2px] w-5 bg-forest transition ${menuOpen ? 'top-[5px] -rotate-45' : 'top-[10px]'}`} />
+              <span className={`absolute left-0 h-[1.5px] w-5 bg-stone transition ${menuOpen ? 'top-[5px] rotate-45' : 'top-0'}`} />
+              <span className={`absolute left-0 top-[5px] h-[1.5px] w-5 bg-stone transition ${menuOpen ? 'opacity-0' : ''}`} />
+              <span className={`absolute left-0 h-[1.5px] w-5 bg-stone transition ${menuOpen ? 'top-[5px] -rotate-45' : 'top-[10px]'}`} />
             </span>
           </button>
         </div>
@@ -73,14 +80,14 @@ function MobileMenu({ close, active }: { close: () => void; active: string }) {
   const { c } = useI18n<Content>()
   useDialogFlag()
   return (
-    <div id="mobile-menu" role="dialog" aria-modal="true" aria-label={c.a11y.mobile} className="grid-paper fixed inset-x-0 bottom-0 top-16 z-30 overflow-y-auto bg-paper px-5 pb-10 pt-6 text-forest xl:hidden">
-      <StatusPill />
+    <div id="mobile-menu" role="dialog" aria-modal="true" aria-label={c.a11y.mobile} className="dark fixed inset-x-0 bottom-0 top-14 z-30 overflow-y-auto bg-forest-deep px-5 pb-10 pt-6 text-stone lg:hidden">
+      <StatusPill dark />
       <nav aria-label={c.a11y.mobile} className="mt-6">
-        <ol className="divide-y divide-forest/10 border-y border-forest/10">
+        <ol className="divide-y divide-stone/10 border-y border-stone/10">
           {c.nav.map(([id, l], i) => (
             <li key={id}>
-              <a href={`#${id}`} onClick={close} aria-current={active === id ? 'true' : undefined} className="flex min-h-[62px] items-center gap-4 font-display text-[26px]">
-                <span className="w-8 font-sans text-[12px] font-semibold text-brass-ink" aria-hidden>0{i + 1}</span>{l}
+              <a href={`#${id}`} onClick={close} aria-current={active === id ? 'true' : undefined} className="flex min-h-[60px] items-center gap-4 font-display text-[27px] tracking-[-0.01em]">
+                <span className="w-8 font-sans text-[12px] font-semibold text-brass" aria-hidden>0{i + 1}</span>{l}
                 {active === id && <span className="ml-auto h-2 w-2 rounded-full bg-brass" aria-hidden />}
               </a>
             </li>
@@ -88,50 +95,68 @@ function MobileMenu({ close, active }: { close: () => void; active: string }) {
         </ol>
       </nav>
       <div className="mt-8 flex flex-col gap-3">
-        <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap inline-flex items-center justify-center gap-2 rounded-full bg-forest px-5 font-semibold text-stone"><WaIcon />{c.waCta} {BIZ.mobile}</a>
-        <a href={`tel:${BIZ.officeTel}`} className="tap inline-flex items-center justify-center rounded-full border border-forest/25 px-5 font-semibold">{c.contact.office} {BIZ.office}</a>
+        <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap inline-flex items-center justify-center gap-2 rounded-full bg-brass px-5 font-semibold text-forest-deep"><WaIcon />{c.waCta} {BIZ.mobile}</a>
+        <a href={`tel:${BIZ.officeTel}`} className="tap inline-flex items-center justify-center gap-2 rounded-full border border-stone/25 px-5 font-semibold"><PhoneIcon className="h-[18px] w-[18px]" />{c.contact.office} {BIZ.office}</a>
       </div>
     </div>
   )
 }
 
-const TIER: Record<number, string> = { 0: '#DAD9D2', 1: '#C9A15A', 2: '#C3C8C4', 3: '#E8D7AE' }
+const TIER_COLOR = ['#E4E2DA', '#DCC08A', '#C9CFCB', '#EDE8DF']
+const NUMERAL = ['I', 'II', 'III', 'IV']
 
 function Hero() {
   const { c, lang } = useI18n<Content>()
+  const [lead, ...rest] = c.plaques
   return (
-    <section id="top" className="grid-paper relative overflow-hidden bg-stone">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 pb-14 pt-12 sm:px-8 lg:grid-cols-12 lg:items-center lg:pb-20 lg:pt-20">
+    <section id="top" className="dark relative overflow-hidden bg-forest-deep text-stone">
+      <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden />
+      <span className="amp pointer-events-none absolute -right-[4vw] top-[-2vw] hidden select-none text-[44vw] lg:block xl:text-[38vw]" aria-hidden>&amp;</span>
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-5 pb-12 pt-8 sm:px-8 sm:pt-14 lg:grid-cols-12 lg:gap-10 lg:pb-16 lg:pt-20">
         <div className="lg:col-span-7">
-          <Eyebrow>{c.hero.eyebrow}</Eyebrow>
-          <h1 className={`mt-7 font-display leading-[1.02] tracking-[-0.01em] text-forest ${lang === 'ms' ? 'text-[clamp(2.3rem,7vw,4.9rem)]' : 'text-[clamp(2.5rem,7.6vw,5.4rem)]'}`}>
-            <span className="block">{c.hero.h1a}</span><span className="block text-brass-ink">{c.hero.h1b}</span>
+          <p className="inline-flex items-start gap-2.5 text-[12.5px] font-medium tracking-[0.04em] text-brass sm:text-[13px]">
+            <svg viewBox="0 0 20 20" className="mt-px h-4 w-4 shrink-0" fill="currentColor" aria-hidden><path d="M10 1.5l2.3 5.2 5.7.5-4.3 3.8 1.3 5.6L10 13.7l-5 2.9 1.3-5.6L2 7.2l5.7-.5z" /></svg>
+            <span className="flex flex-wrap gap-x-2"><span className="whitespace-nowrap">{c.hero.proof.split(' · ')[0]}</span><span className="whitespace-nowrap"><span aria-hidden>· </span>{c.hero.proof.split(' · ').slice(1).join(' · ')}</span></span>
+          </p>
+          <h1 className={`mt-6 font-display font-normal leading-[0.98] tracking-[-0.025em] ${lang === 'ms' ? 'text-[clamp(2.55rem,7.4vw,5.6rem)]' : 'text-[clamp(2.75rem,7.8vw,6rem)]'}`}>
+            <span className="block">{c.hero.h1a}</span><span className="block italic text-brass-light">{c.hero.h1b}</span>
           </h1>
-          <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-moss sm:text-[18px]">{c.hero.sub}</p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a href="#brief" className="tap inline-flex items-center justify-center gap-2 rounded-full bg-forest px-7 text-[16px] font-semibold text-stone transition hover:bg-forest-3">{c.hero.cta}<span aria-hidden>→</span></a>
-            <a href="#work" className="tap inline-flex items-center justify-center rounded-full border border-forest/30 px-7 text-[16px] font-semibold text-forest transition hover:border-forest">{c.hero.cta2}</a>
+          <p className="mt-6 max-w-[34rem] text-[16.5px] leading-relaxed text-moss-dark sm:text-[18px]">{c.hero.sub}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+            <a href="#brief" className="tap lift inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-brass px-7 text-[16px] font-semibold text-forest-deep hover:bg-brass-light">{c.hero.cta}<span className="arrow-r"><Arrow /></span></a>
+            <a href="#work" className="tap hidden items-center gap-2 text-[15.5px] font-medium text-stone underline decoration-brass/60 underline-offset-[6px] transition hover:decoration-brass sm:inline-flex">{c.hero.cta2}</a>
           </div>
         </div>
-        <div className="lg:col-span-5">
-          <p className="mb-4 text-center text-[11.5px] font-semibold uppercase tracking-[0.3em] text-moss lg:text-left">{c.hero.plaquesTitle}</p>
-          <ol className="grid grid-cols-2 gap-3 sm:gap-4">
-            {c.plaques.map((p, i) => (
-              <li key={p.project} className={`plaque ${i % 2 ? 'sm:translate-y-6' : ''}`}>
-                <span className="block text-[9.5px] font-semibold uppercase tracking-[0.24em] text-stone/70">Atap · 2023</span>
-                <span className="mt-3 block font-display text-[21px] leading-tight sm:text-[25px]" style={{ color: TIER[i] }}>{p.tier}</span>
-                <span className="mt-2 block text-[13.5px] font-semibold leading-snug text-stone sm:text-[14.5px]">{p.project}</span>
-                {p.place && <span className="mt-0.5 block text-[12.5px] text-moss-dark">{p.place}</span>}
+        <div className="lg:col-span-5 lg:pt-3">
+          <section aria-label={c.a11y.ledger} className="relative">
+            <div className="flex items-baseline justify-between border-b border-brass/50 pb-3 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-brass"><span>Atap Design Award</span><span className="font-display text-[20px] normal-case tracking-normal">2023</span></div>
+            <ol>
+              <li className="grid grid-cols-[2.2rem_1fr] border-b border-stone/12 py-5 sm:py-6">
+                <span className="pt-2 font-display text-[15px] italic text-brass" aria-hidden>{NUMERAL[0]}</span>
+                <div>
+                  <p className="font-display text-[44px] italic leading-none tracking-[-0.02em] sm:text-[56px]" style={{ color: TIER_COLOR[0] }}>{lead.tier}</p>
+                  <p className="mt-3 text-[16px] font-medium text-stone">{lead.project}</p>
+                  <p className="text-[14px] text-moss-dark">{lead.place}</p>
+                </div>
               </li>
-            ))}
-          </ol>
+              {rest.map((p, i) => (
+                <li key={p.tier} className="grid grid-cols-[2.2rem_1fr] items-baseline border-b border-stone/12 py-3.5 sm:py-4">
+                  <span className="font-display text-[15px] italic text-brass" aria-hidden>{NUMERAL[i + 1]}</span>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+                    <p className="font-display text-[24px] leading-tight sm:text-[27px]" style={{ color: TIER_COLOR[i + 1] }}>{p.tier}</p>
+                    <p className="text-[14px] text-moss-dark">{p.project}{p.place && <span className="text-stone/70">, {p.place}</span>}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
         </div>
       </div>
-      <dl className="mx-auto grid max-w-7xl grid-cols-2 border-t border-forest/15 px-5 sm:px-8 lg:grid-cols-4">
+      <dl className="relative mx-auto grid max-w-7xl grid-cols-2 border-t border-stone/12 px-5 sm:grid-cols-3 sm:px-8">
         {c.stats.map(([n, l], i) => (
-          <div key={i} className={`flex flex-col-reverse gap-1.5 py-6 pr-4 ${i % 2 ? 'pl-4 border-l border-forest/10 lg:pl-6' : ''} ${i === 2 ? 'lg:border-l lg:border-forest/10 lg:pl-6' : ''} ${i > 1 ? 'border-t border-forest/10 lg:border-t-0' : ''}`}>
-            <dt className="text-[13.5px] leading-snug text-moss">{l}</dt>
-            <dd className="font-display text-[34px] leading-none text-forest sm:text-[42px]">{n}</dd>
+          <div key={n} className={`flex flex-col-reverse gap-1.5 py-6 lg:py-7 ${i === 1 ? 'border-l border-stone/12 pl-5 sm:pl-8' : ''} ${i === 2 ? 'col-span-2 border-t border-stone/12 sm:col-span-1 sm:border-l sm:border-t-0 sm:pl-8' : ''}`}>
+            <dt className="text-[13.5px] leading-snug text-moss-dark">{l}</dt>
+            <dd className="font-display text-[34px] leading-none tracking-[-0.02em] text-stone sm:text-[44px]">{n}</dd>
           </div>
         ))}
       </dl>
@@ -139,84 +164,97 @@ function Hero() {
   )
 }
 
-function Clients() {
-  const { c } = useI18n<Content>()
-  return (
-    <section aria-labelledby="clients-h" className="bg-paper">
-      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
-        <div className="flex flex-wrap items-end justify-between gap-3"><h2 id="clients-h" className="eyebrow text-brass-ink"><span className="h-px w-8 bg-brass-ink" aria-hidden />{c.clients.eyebrow}</h2><p className="text-[13px] text-moss">{c.clients.note}</p></div>
-        <ul className="mt-8 grid grid-cols-2 border-l border-t border-forest/10 sm:grid-cols-3 lg:grid-cols-4">
-          {CLIENTS.map(([n, p]) => (
-            <li key={n} className="border-b border-r border-forest/10 p-4 sm:p-6">
-              <p className="font-display text-[16px] leading-snug text-forest sm:text-[19px]">{n}</p>
-              {p && <p className="mt-1.5 text-[12.5px] leading-snug text-moss sm:text-[13.5px]">{p}</p>}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )
-}
-
-/** Hand-drawn style SVG scenes interpreting B&N's Mercure Miri design notes. */
-function RoomArt({ id }: { id: RoomId }) {
-  const swift = (x: number, y: number, s = 1) => <path key={`${x}-${y}`} d={`M${x} ${y} q ${6 * s} ${-5 * s} ${12 * s} 0 q ${6 * s} ${-5 * s} ${12 * s} 0`} fill="none" stroke="#EEEAE1" strokeWidth="2" strokeLinecap="round" />
+/** Abstract plates: colour and texture fields drawn from B&N's notes for each space. */
+function Plate({ id }: { id: RoomId }) {
+  const g = `p-${id}`
   if (id === 'atoti') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" aria-hidden>
-      <rect width="480" height="360" fill="#0C211D" />
-      <path d="M0 360 V150 C60 40 170 10 240 10 C310 10 420 40 480 150 V360 Z" fill="#1A3F37" />
-      <ellipse cx="240" cy="330" rx="200" ry="40" fill="#C9A15A" opacity=".18" />
-      {[[60, 120, 70], [100, 70, 110], [140, 45, 80], [180, 30, 130], [220, 22, 95], [260, 22, 150], [300, 30, 90], [340, 45, 120], [380, 70, 85], [420, 120, 60]].map(([x, y, h], i) => <path key={i} d={`M${x - 12} ${y} L${x} ${y + h} L${x + 12} ${y} Z`} fill={i % 3 ? '#24524A' : '#C9A15A'} opacity={i % 3 ? 1 : 0.85} />)}
-      {[swift(150, 210), swift(210, 180, 1.2), swift(280, 225), swift(320, 190, 0.9), swift(250, 255, 0.8)]}
-      <rect x="150" y="300" width="180" height="16" rx="8" fill="#C9A15A" opacity=".7" />
+    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs>
+        <linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#081613" /><stop offset="1" stopColor="#24524A" /></linearGradient>
+        <radialGradient id={`${g}r`} cx=".5" cy="1" r=".7"><stop offset="0" stopColor="#C9A15A" stopOpacity=".35" /><stop offset="1" stopColor="#C9A15A" stopOpacity="0" /></radialGradient>
+      </defs>
+      <rect width="480" height="360" fill={`url(#${g})`} />
+      <path d="M40 360 V200 C40 90 140 40 240 40 C340 40 440 90 440 200 V360" fill="none" stroke="#C9A15A" strokeOpacity=".35" />
+      <rect width="480" height="360" fill={`url(#${g}r)`} />
+      {Array.from({ length: 30 }, (_, i) => { const x = 14 + i * 15.6; const h = 40 + ((i * 53) % 9) * 19 + (i % 2) * 14; return <g key={i}><line x1={x} y1="0" x2={x} y2={h} stroke="#C9A15A" strokeOpacity={0.35 + (i % 3) * 0.2} strokeWidth="1.1" /><circle cx={x} cy={h + 3} r="2" fill="#DCC08A" opacity=".85" /></g> })}
+      {[[150, 230, 1], [214, 200, 1.3], [292, 244, 1], [330, 206, 0.8], [252, 270, 0.75]].map(([x, y, s]) => <path key={x} d={`M${x} ${y} q ${7 * s} ${-6 * s} ${14 * s} 0 q ${7 * s} ${-6 * s} ${14 * s} 0`} fill="none" stroke="#EDE8DF" strokeWidth="1.6" strokeLinecap="round" opacity=".85" />)}
     </svg>
   )
   if (id === 'belian') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" aria-hidden>
-      <rect width="480" height="360" fill="#12302A" />
-      {[[30, 34], [96, 22], [150, 40], [232, 26], [300, 44], [372, 24], [430, 36]].map(([x, w], i) => <rect key={i} x={x} y="0" width={w} height="360" fill={i % 2 ? '#1A3F37' : '#24524A'} />)}
-      {[[60, 60, 70], [170, 30, 90], [260, 70, 60], [390, 40, 85], [460, 90, 50]].map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r} fill="#2F6155" opacity=".75" />)}
-      {[120, 210, 300, 390].map((x) => <g key={x}><line x1={x} y1="0" x2={x} y2="150" stroke="#C9A15A" strokeWidth="1.5" /><path d={`M${x - 18} 168 Q${x} 140 ${x + 18} 168 Z`} fill="#C9A15A" /></g>)}
-      <rect x="70" y="250" width="340" height="14" rx="3" fill="#7A5A22" />
-      <rect x="90" y="264" width="10" height="70" fill="#7A5A22" /><rect x="380" y="264" width="10" height="70" fill="#7A5A22" />
-      <rect x="0" y="334" width="480" height="26" fill="#0C211D" />
+    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs>
+        <radialGradient id={g} cx=".55" cy=".35" r=".6"><stop offset="0" stopColor="#E8C98A" /><stop offset=".5" stopColor="#7A5A22" /><stop offset="1" stopColor="#12302A" /></radialGradient>
+        <linearGradient id={`${g}s`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3A2614" /><stop offset=".5" stopColor="#5C3D1E" /><stop offset="1" stopColor="#2A1B0E" /></linearGradient>
+      </defs>
+      <rect width="480" height="360" fill={`url(#${g})`} />
+      {Array.from({ length: 22 }, (_, i) => <rect key={i} x={i * 22 - 2} y="0" width={12 + (i % 3) * 2} height="360" fill={`url(#${g}s)`} />)}
+      {[[90, 40, 70], [210, 10, 90], [330, 50, 80], [440, 20, 70]].map(([x, y, r]) => <circle key={x} cx={x} cy={y} r={r} fill="#1A3F37" opacity=".55" />)}
+      <rect x="0" y="262" width="480" height="2" fill="#C9A15A" opacity=".8" />
+      <rect x="0" y="264" width="480" height="96" fill="#12302A" opacity=".72" />
     </svg>
   )
   if (id === 'terabai') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" aria-hidden>
-      <rect width="480" height="360" fill="#1A3F37" />
-      <circle cx="240" cy="180" r="150" fill="#C9A15A" opacity=".12" />
-      <path d="M240 30 C300 60 318 120 318 180 C318 240 300 300 240 330 C180 300 162 240 162 180 C162 120 180 60 240 30 Z" fill="#9E3B2E" stroke="#C9A15A" strokeWidth="4" />
-      <path d="M240 60 C282 86 292 132 292 180 C292 228 282 274 240 300 C198 274 188 228 188 180 C188 132 198 86 240 60 Z" fill="none" stroke="#EEEAE1" strokeWidth="2.5" />
-      <path d="M240 110 c24 0 30 30 10 36 c-18 6 -26 -16 -10 -20 M240 250 c-24 0 -30 -30 -10 -36 c18 -6 26 16 10 20 M206 180 c0 -24 30 -30 36 -10 c6 18 -16 26 -20 10 M274 180 c0 24 -30 30 -36 10 c-6 -18 16 -26 20 -10" fill="none" stroke="#EEEAE1" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="240" cy="180" r="9" fill="#C9A15A" />
-      {[60, 110, 370, 420].map((x, i) => <g key={x}><line x1={x} y1="0" x2={x} y2={70 + (i % 2) * 30} stroke="#C9A15A" strokeWidth="1.5" /><circle cx={x} cy={78 + (i % 2) * 30} r="8" fill="#C9A15A" /></g>)}
+    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs><radialGradient id={g} cx=".5" cy=".5" r=".75"><stop offset="0" stopColor="#B4483A" /><stop offset="1" stopColor="#4A1A14" /></radialGradient></defs>
+      <rect width="480" height="360" fill={`url(#${g})`} />
+      {[0, 1, 2, 3].map((k) => <path key={k} d={`M240 ${24 + k * 20} C${304 - k * 8} ${56 + k * 14} ${326 - k * 16} ${120 + k * 8} ${326 - k * 16} 180 C${326 - k * 16} ${240 - k * 8} ${304 - k * 8} ${304 - k * 14} 240 ${336 - k * 20} C${176 + k * 8} ${304 - k * 14} ${154 + k * 16} ${240 - k * 8} ${154 + k * 16} 180 C${154 + k * 16} ${120 + k * 8} ${176 + k * 8} ${56 + k * 14} 240 ${24 + k * 20} Z`} fill="none" stroke={k === 0 ? '#DCC08A' : '#EDE8DF'} strokeOpacity={k === 0 ? 1 : 0.55 - k * 0.1} strokeWidth={k === 0 ? 1.6 : 1} />)}
+      <path d="M240 118 c22 0 28 28 9 34 c-16 6 -24 -14 -9 -18 M240 242 c-22 0 -28 -28 -9 -34 c16 -6 24 14 9 18 M208 180 c0 -22 28 -28 34 -9 c6 16 -14 24 -18 9 M272 180 c0 22 -28 28 -34 9 c-6 -16 14 -24 18 -9" fill="none" stroke="#DCC08A" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="240" cy="180" r="5" fill="#DCC08A" />
+      {Array.from({ length: 9 }, (_, i) => <line key={i} x1={30 + i * 6} y1="0" x2={30 + i * 6} y2="360" stroke="#DCC08A" strokeOpacity=".18" />)}
+      {Array.from({ length: 9 }, (_, i) => <line key={`r${i}`} x1={402 + i * 6} y1="0" x2={402 + i * 6} y2="360" stroke="#DCC08A" strokeOpacity=".18" />)}
     </svg>
   )
   if (id === 'rooms') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" aria-hidden>
-      <defs><pattern id="scales" width="14" height="10" patternUnits="userSpaceOnUse"><path d="M0 10 Q7 0 14 10" fill="none" stroke="#C9A15A" strokeWidth="1.3" opacity=".8" /></pattern></defs>
-      <rect width="480" height="360" fill="#EEEAE1" />
-      <rect width="480" height="170" fill="#9FC3BC" />
-      <path d="M0 120 C80 80 140 110 200 70 C240 45 300 80 340 60 C400 30 440 70 480 50 V170 H0 Z" fill="#24524A" />
-      <path d="M0 170 V95 L40 80 L70 120 L60 170 Z" fill="#7A5A22" />
-      <rect x="120" y="120" width="240" height="90" rx="10" fill="#12302A" /><rect x="120" y="120" width="240" height="90" rx="10" fill="url(#scales)" />
-      <rect x="100" y="200" width="280" height="56" rx="8" fill="#F8F6F1" stroke="#12302A" strokeOpacity=".15" />
-      <path d="M60 300 C140 280 340 280 420 300 C440 320 420 345 400 350 C300 362 180 362 80 350 C60 345 40 320 60 300 Z" fill="#E3DDD0" />
-      {[0, 1, 2, 3].map((k) => <path key={k} d={`M${90 + k * 14} ${318 - k * 3} C180 ${300 - k * 4} 300 ${300 - k * 4} ${390 - k * 14} ${318 - k * 3}`} fill="none" stroke="#24524A" strokeWidth="1.6" opacity=".55" />)}
+    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs>
+        <linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#B9D3CC" /><stop offset="1" stopColor="#7FA8A0" /></linearGradient>
+        <pattern id={`${g}p`} width="16" height="11" patternUnits="userSpaceOnUse"><path d="M0 11 Q8 0 16 11" fill="none" stroke="#C9A15A" strokeWidth="1" /></pattern>
+      </defs>
+      <rect width="480" height="150" fill={`url(#${g})`} />
+      <path d="M0 112 C70 84 130 104 190 72 C240 48 300 82 350 62 C400 42 440 66 480 52 V150 H0 Z" fill="#24524A" />
+      <path d="M0 132 C90 116 160 136 240 122 C330 108 400 132 480 118 V150 H0 Z" fill="#12302A" />
+      <rect y="150" width="480" height="58" fill="#12302A" /><rect y="150" width="480" height="58" fill={`url(#${g}p)`} opacity=".7" />
+      <rect y="208" width="480" height="152" fill="#E2DBCE" />
+      {Array.from({ length: 7 }, (_, k) => <path key={k} d={`M${40 + k * 10} ${330 - k * 9} C160 ${286 - k * 10} 320 ${286 - k * 10} ${440 - k * 10} ${330 - k * 9}`} fill="none" stroke="#24524A" strokeWidth="1.1" opacity={0.65 - k * 0.07} />)}
     </svg>
   )
   return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" aria-hidden>
-      <defs><linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3C2A4A" /><stop offset=".55" stopColor="#9E3B2E" /><stop offset="1" stopColor="#E8A85A" /></linearGradient></defs>
-      <rect width="480" height="360" fill="url(#dusk)" />
-      <circle cx="240" cy="250" r="80" fill="#F3C97A" />
-      <path d="M0 0 H480 V360 H400 C400 200 340 120 240 120 C140 120 80 200 80 360 H0 Z" fill="#0C211D" />
-      {[110, 150, 330, 370].map((x, i) => <path key={x} d={`M${x} 0 L${x + (i < 2 ? 10 : -10)} ${40 + (i % 2) * 25} L${x + (i < 2 ? 20 : -20)} 0 Z`} fill="#1A3F37" />)}
-      <rect x="80" y="300" width="320" height="10" fill="#12302A" />
-      {[140, 200, 280, 340].map((x) => <g key={x}><rect x={x - 2} y="310" width="4" height="40" fill="#12302A" /><rect x={x - 14} y="304" width="28" height="7" rx="3" fill="#12302A" /></g>)}
-      {[[180, 160], [300, 170]].map(([x, y]) => <path key={x} d={`M${x} ${y} q 8 -6 16 0 q 8 -6 16 0`} fill="none" stroke="#0C211D" strokeWidth="2.5" strokeLinecap="round" />)}
+    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs><linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3C2A4A" /><stop offset=".55" stopColor="#B04A35" /><stop offset="1" stopColor="#ECB063" /></linearGradient></defs>
+      <rect width="480" height="360" fill={`url(#${g})`} />
+      <circle cx="240" cy="262" r="70" fill="#F6D08A" opacity=".95" />
+      {[0, 1, 2].map((k) => <line key={k} x1="60" x2="420" y1={300 + k * 16} y2={300 + k * 16} stroke="#F6D08A" strokeOpacity={0.5 - k * 0.15} />)}
+      <path d="M0 0 H480 V360 H410 C410 196 340 112 240 112 C140 112 70 196 70 360 H0 Z" fill="#0A1B18" />
+      {[100, 128, 158, 322, 352, 380].map((x, i) => <line key={x} x1={x} y1="0" x2={x} y2={70 + (i % 3) * 26} stroke="#24524A" strokeWidth="1.4" />)}
+      {[[188, 168], [292, 182]].map(([x, y]) => <path key={x} d={`M${x} ${y} q 8 -6 16 0 q 8 -6 16 0`} fill="none" stroke="#0A1B18" strokeWidth="2" strokeLinecap="round" />)}
     </svg>
+  )
+}
+
+function Rail({ label, count, children, prev, next }: { label: string; count: number; children: ReactNode; prev: string; next: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [idx, setIdx] = useState(0)
+  const [end, setEnd] = useState(false)
+  const step = () => { const li = ref.current?.querySelector('li'); return li ? li.getBoundingClientRect().width + 16 : 300 }
+  const onScroll = () => { const el = ref.current; if (!el) return; setIdx(Math.min(count - 1, Math.round(el.scrollLeft / step()))); setEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4) }
+  useEffect(() => { onScroll() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const go = (d: number) => ref.current?.scrollBy({ left: d * step(), behavior: reduced() ? 'auto' : 'smooth' })
+  const btn = 'tap grid place-items-center rounded-full border border-stone/25 text-stone transition hover:bg-stone hover:text-forest disabled:opacity-35'
+  return (
+    <div>
+      <div ref={ref} onScroll={onScroll} role="region" aria-label={label} tabIndex={0} className="rail -mx-5 scroll-px-5 overflow-x-auto px-5 sm:-mx-8 sm:scroll-px-8 sm:px-8">
+        <ul className="flex gap-4">{children}</ul>
+      </div>
+      <div className="mt-5 flex items-center justify-between gap-4">
+        <div className="flex gap-1.5" aria-hidden>
+          {Array.from({ length: count }, (_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${(end ? i === count - 1 : i === idx) ? 'w-6 bg-brass' : 'w-1.5 bg-stone/30'}`} />)}
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => go(-1)} disabled={idx === 0} aria-label={prev} className={btn}><Arrow dir="left" /></button>
+          <button type="button" onClick={() => go(1)} disabled={end} aria-label={next} className={btn}><Arrow /></button>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -226,41 +264,71 @@ function Work() {
   const [room, setRoom] = useState<RoomId>('atoti')
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const onKey = (e: React.KeyboardEvent, i: number) => {
-    const n = e.key === 'ArrowRight' ? (i + 1) % ROOM_IDS.length : e.key === 'ArrowLeft' ? (i + ROOM_IDS.length - 1) % ROOM_IDS.length : -1
+    const k = e.key
+    const n = k === 'ArrowDown' || k === 'ArrowRight' ? (i + 1) % ROOM_IDS.length : k === 'ArrowUp' || k === 'ArrowLeft' ? (i + ROOM_IDS.length - 1) % ROOM_IDS.length : k === 'Home' ? 0 : k === 'End' ? ROOM_IDS.length - 1 : -1
     if (n >= 0) { e.preventDefault(); setRoom(ROOM_IDS[n]); tabs.current[n]?.focus() }
   }
   const R = W.rooms[room]
+  const ri = ROOM_IDS.indexOf(room)
   return (
-    <section id="work" className="relative overflow-hidden bg-forest text-stone">
-      <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-7"><Eyebrow dark>{W.eyebrow}</Eyebrow><h2 className="h2 mt-5 text-stone">{W.title}</h2></div>
-          <div className="lg:col-span-5 lg:pt-10">
-            <blockquote lang="en" className="font-display text-[19px] leading-snug text-stone sm:text-[21px]">{W.quote}</blockquote>
-            <p className="mt-3 text-[13px] text-moss-dark">— {W.quoteBy}</p>
-            <p className="mt-5 text-[15px] leading-relaxed text-moss-dark">{W.concept}</p>
-          </div>
-        </div>
-        <div className="mt-12">
-          <p id="room-pick" className="text-[12px] font-semibold uppercase tracking-[0.2em] text-moss-dark">{W.pick}</p>
-          <div role="tablist" aria-labelledby="room-pick" className="mt-3 flex flex-wrap gap-2">
-            {ROOM_IDS.map((id, i) => (
-              <button key={id} ref={(el) => { tabs.current[i] = el }} role="tab" id={`tab-${id}`} aria-selected={room === id} aria-controls="room-panel" tabIndex={room === id ? 0 : -1} onClick={() => setRoom(id)} onKeyDown={(e) => onKey(e, i)}
-                className={`tap rounded-full border px-4 text-[14.5px] font-semibold transition ${room === id ? 'border-brass bg-brass text-forest' : 'border-stone/20 text-stone hover:border-stone/60'}`}>
-                {W.rooms[id].name}
-              </button>
-            ))}
-          </div>
-          <div id="room-panel" role="tabpanel" aria-labelledby={`tab-${room}`} className="mt-6 grid overflow-hidden rounded-[28px] border border-stone/12 bg-forest-2 lg:grid-cols-2">
-            <div key={room} className="room-in aspect-[4/3] lg:aspect-auto lg:min-h-[400px]"><RoomArt id={room} /></div>
-            <div className="flex flex-col p-7 sm:p-10">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brass">{R.kind}</p>
-              <h3 className="mt-3 font-display text-[40px] leading-none sm:text-[52px]">{R.name}</h3>
-              <p className="mt-6 max-w-md text-[16.5px] leading-relaxed text-stone/90">{R.text}</p>
-              <ul className="mt-6 flex flex-wrap gap-2">{R.tags.map((t) => <li key={t} className="rounded-full border border-stone/20 px-3 py-1 text-[13px] text-stone/85">{t}</li>)}</ul>
-              <p className="mt-auto pt-8 text-[12.5px] leading-snug text-moss-dark">{W.illus}</p>
+    <section id="work" className="dark relative bg-forest text-stone">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="grid gap-10 md:grid-cols-12 lg:gap-14">
+          <div className="md:col-span-5">
+            <Eyebrow dark>{W.eyebrow}</Eyebrow>
+            <h2 className="h2 mt-5 text-stone">{W.title}</h2>
+            <blockquote lang="en" className="mt-7 border-l border-brass/60 pl-5 font-display text-[19px] italic leading-snug text-stone/95 sm:text-[21px]">{W.quote}</blockquote>
+            <p className="mt-2 pl-5 text-[13px] text-moss-dark">— {W.quoteBy}</p>
+            <p className="mt-6 hidden text-[15px] leading-relaxed text-moss-dark lg:block">{W.concept}</p>
+            {/* desktop: vertical tabs */}
+            <div role="tablist" aria-label={c.a11y.rooms} aria-orientation="vertical" className="mt-9 hidden border-t border-stone/12 md:block">
+              {ROOM_IDS.map((id, i) => (
+                <button key={id} ref={(el) => { tabs.current[i] = el }} role="tab" id={`tab-${id}`} aria-selected={room === id} aria-controls="room-panel" tabIndex={room === id ? 0 : -1} onClick={() => setRoom(id)} onKeyDown={(e) => onKey(e, i)}
+                  className={`group relative flex min-h-[58px] w-full items-center gap-4 border-b border-stone/12 pl-4 pr-2 text-left transition ${room === id ? 'bg-forest-2' : 'hover:bg-forest-2/60'}`}>
+                  <span className={`absolute inset-y-0 left-0 w-[2px] transition ${room === id ? 'bg-brass' : 'bg-transparent'}`} aria-hidden />
+                  <span className="w-6 font-display text-[14px] italic text-brass" aria-hidden>0{i + 1}</span>
+                  <span className="font-display text-[22px] leading-none tracking-[-0.01em]">{W.rooms[id].name}</span>
+                  <span className="ml-auto text-right text-[12.5px] text-moss-dark">{W.rooms[id].kind.split(' · ')[0]}</span>
+                </button>
+              ))}
             </div>
           </div>
+          <div className="hidden md:col-span-7 md:block">
+            <div id="room-panel" role="tabpanel" aria-labelledby={`tab-${room}`} className="lg:sticky lg:top-24">
+              <div key={room} className="plate-in relative aspect-[4/3] overflow-hidden rounded-[22px] ring-1 ring-stone/10"><Plate id={room} />
+                <span className="absolute left-4 top-4 rounded-full bg-forest-deep/80 px-3 py-1 font-display text-[14px] italic text-brass-light">0{ri + 1} / 05</span>
+              </div>
+              <div className="mt-7 grid gap-x-10 gap-y-4 lg:grid-cols-[1fr_auto]">
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brass">{R.kind}</p>
+                  <h3 className="mt-2 font-display text-[40px] leading-none tracking-[-0.02em] lg:text-[48px]">{R.name}</h3>
+                  <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-stone/90">{R.text}</p>
+                </div>
+                <ul className="flex flex-wrap content-start gap-2 lg:max-w-[13rem] lg:flex-col lg:items-start">{R.tags.map((t) => <li key={t} className="rounded-full border border-stone/20 px-3 py-1 text-[13px] text-stone/85">{t}</li>)}</ul>
+              </div>
+              <p className="mt-6 text-[12.5px] text-moss-dark">{W.illus}</p>
+            </div>
+          </div>
+        </div>
+        {/* mobile: swipe cards */}
+        <div className="mt-10 md:hidden">
+          <p className="mb-4 text-[13px] text-moss-dark">{W.swipe}</p>
+          <Rail label={c.a11y.rooms} count={ROOM_IDS.length} prev={c.a11y.prev} next={c.a11y.next}>
+            {ROOM_IDS.map((id, i) => {
+              const X = W.rooms[id]
+              return (
+                <li key={id} className="w-[84%] shrink-0 overflow-hidden rounded-[20px] bg-forest-2 ring-1 ring-stone/10 sm:w-[60%]">
+                  <div className="relative aspect-[4/3]"><Plate id={id} /><span className="absolute left-3 top-3 rounded-full bg-forest-deep/80 px-2.5 py-0.5 font-display text-[13px] italic text-brass-light">0{i + 1} / 05</span></div>
+                  <div className="p-5">
+                    <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-brass">{X.kind}</p>
+                    <h3 className="mt-1.5 font-display text-[30px] leading-none tracking-[-0.01em]">{X.name}</h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-stone/90">{X.text}</p>
+                  </div>
+                </li>
+              )
+            })}
+          </Rail>
+          <p className="mt-4 text-[12.5px] text-moss-dark">{W.illus}</p>
         </div>
       </div>
     </section>
@@ -273,34 +341,69 @@ function Projects() {
   const [f, setF] = useState<'all' | Sector>('all')
   const [more, setMore] = useState(false)
   const keys: ('all' | Sector)[] = ['all', 'h', 'g', 'r', 'w', 's']
-  const list = PROJECTS.map((p, i) => ({ ...p, no: i + 1 })).filter((p) => f === 'all' || p.s === f)
+  const all = useMemo(() => PROJECTS.map((p, i) => ({ ...p, no: i + 1 })), [])
+  const list = all.filter((p) => f === 'all' || p.s === f)
   const count = (k: 'all' | Sector) => (k === 'all' ? PROJECTS.length : PROJECTS.filter((p) => p.s === k).length)
+  const order = { platinum: 0, gold: 1, silver: 2 } as const
+  const winners = all.filter((p) => p.a).sort((a, b) => order[a.a!] - order[b.a!])
+  const tierCls = { platinum: 'text-forest', gold: 'text-brass-ink', silver: 'text-moss' } as const
   return (
-    <section id="projects" className="bg-paper">
-      <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
-        <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+    <section id="projects" className="bg-stone">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7"><Eyebrow>{P.eyebrow}</Eyebrow><h2 className="h2 mt-5">{P.title}</h2></div>
           <p className="text-[16px] leading-relaxed text-moss lg:col-span-5">{P.sub}</p>
         </div>
-        <div role="group" aria-label={c.a11y.filter} className="mt-10 flex flex-wrap gap-2">
+        <p className="mt-12 text-[12px] font-semibold uppercase tracking-[0.2em] text-brass-ink">{P.winners}</p>
+        <ol className="mt-3 border-t border-forest/20">
+          {winners.map((p) => (
+            <Reveal as="li" key={p.n} className="grid gap-x-8 gap-y-1 border-b border-forest/15 py-6 md:grid-cols-[9rem_1fr_auto] md:items-baseline lg:py-7">
+              <span className={`font-display text-[19px] italic ${tierCls[p.a!]}`}>{P.awards[p.a!]}</span>
+              <span className="font-display text-[27px] leading-[1.08] tracking-[-0.015em] text-forest sm:text-[34px] lg:text-[40px]">{p.n}</span>
+              {p.s === 'h'
+                ? <a href="#work" className="group inline-flex min-h-[44px] items-center gap-2 text-[14.5px] font-medium text-forest underline decoration-brass underline-offset-4 md:justify-end">{P.story}<span className="arrow-r"><Arrow /></span></a>
+                : <span className="text-[14px] text-moss md:text-right">{P.sectors[p.s]}</span>}
+            </Reveal>
+          ))}
+        </ol>
+
+        <div className="mt-16 flex flex-wrap items-end justify-between gap-4">
+          <h3 className="font-display text-[30px] leading-none tracking-[-0.015em] sm:text-[36px]">{P.register}</h3>
+          <p className="text-[13.5px] text-moss" aria-live="polite">{list.length} {P.count}</p>
+        </div>
+        <div role="group" aria-label={c.a11y.filter} className="chips -mx-5 mt-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
           {keys.map((k) => (
-            <button key={k} type="button" aria-pressed={f === k} onClick={() => setF(k)} className={`tap inline-flex items-center gap-2 rounded-full border px-4 text-[14px] font-semibold transition ${f === k ? 'border-forest bg-forest text-stone' : 'border-forest/20 text-forest hover:border-forest'}`}>
+            <button key={k} type="button" aria-pressed={f === k} onClick={() => { setF(k); setMore(false) }} className={`tap inline-flex shrink-0 items-center gap-2 rounded-full border px-4 text-[14px] font-medium transition ${f === k ? 'border-forest bg-forest text-stone' : 'border-forest/20 text-forest hover:border-forest'}`}>
               {P.filters[k]}<span className={`text-[12px] tabular-nums ${f === k ? 'text-stone/75' : 'text-moss'}`}>{count(k)}</span>
             </button>
           ))}
         </div>
-        <p className="sr-only" aria-live="polite">{list.length} {P.count}</p>
-        <ol className="mt-8 grid border-t border-forest/15 md:grid-cols-2 md:gap-x-10">
+        <ol id="register" className="mt-6 grid border-t border-forest/15 md:grid-cols-2 md:gap-x-10 lg:grid-cols-3">
           {list.map((p, i) => (
-            <li key={p.n} className={`flex min-h-[60px] items-center gap-4 border-b border-forest/10 py-3 ${!more && i >= 12 ? 'max-md:hidden' : ''}`}>
-              <span className="w-10 shrink-0 text-[12px] font-semibold tabular-nums text-brass-ink">P{String(p.no).padStart(2, '0')}</span>
-              <span className="flex-1 font-display text-[17px] leading-snug text-forest sm:text-[18.5px]">{p.n}</span>
-              {p.a ? <span className={`award award-${p.a}`}>{P.awards[p.a]}</span> : p.s !== 'o' && <span className="hidden text-[12px] text-moss sm:inline">{P.filters[p.s]}</span>}
+            <li key={p.n} className={`flex min-h-[54px] items-center gap-4 border-b border-forest/10 py-2.5 ${!more && i >= 12 ? 'hidden' : !more && i >= 8 ? 'max-md:hidden' : ''}`}>
+              <span className="w-8 shrink-0 font-display text-[14px] italic tabular-nums text-brass-ink">{String(p.no).padStart(2, '0')}</span>
+              <span className="flex-1 text-[15.5px] leading-snug text-forest">{p.n}</span>
+              {p.a && <span className={`award award-${p.a}`}>{P.awards[p.a]}</span>}
             </li>
           ))}
         </ol>
-        {!more && list.length > 12 && <button type="button" onClick={() => setMore(true)} className="tap mt-6 w-full rounded-full border border-forest/25 px-5 text-[15px] font-semibold text-forest md:hidden">{P.showAll} ({list.length})</button>}
-        <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="mt-8 inline-flex min-h-[44px] items-center gap-2 text-[15px] font-semibold text-forest underline decoration-brass underline-offset-4"><WaIcon className="h-4 w-4" />{P.ask}</a>
+        {list.length > 8 && (
+          <button type="button" aria-expanded={more} aria-controls="register" onClick={() => setMore((m) => !m)}
+            className={`tap lift mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-forest/25 px-6 text-[15px] font-medium text-forest hover:border-forest max-sm:w-full ${list.length <= 12 ? 'md:hidden' : ''}`}>
+            {more ? P.showLess : `${P.showAll} (${list.length})`}
+          </button>
+        )}
+
+        <div className="mt-16 grid gap-6 border-t border-forest/15 pt-8 lg:grid-cols-12">
+          <h3 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brass-ink lg:col-span-3">{c.clients.eyebrow}</h3>
+          <div className="min-w-0 lg:col-span-9">
+            <ul className="flex flex-wrap gap-y-1 font-display text-[19px] leading-[1.5] text-forest sm:text-[22px]">
+              {CLIENTS.map(([n], i) => <li key={n} className="flex items-baseline">{i > 0 && <span className="mx-2.5 text-brass" aria-hidden>·</span>}{n}</li>)}
+            </ul>
+            <p className="mt-3 text-[13px] text-moss">{c.clients.note}</p>
+          </div>
+        </div>
+        <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="mt-8 inline-flex min-h-[44px] items-center gap-2 text-[15px] font-medium text-forest underline decoration-brass underline-offset-4"><WaIcon className="h-4 w-4" />{P.ask}</a>
       </div>
     </section>
   )
@@ -310,35 +413,36 @@ function Services() {
   const { c } = useI18n<Content>()
   const S = c.services
   return (
-    <section id="services" className="bg-stone">
-      <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
-        <div className="grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-5"><Eyebrow>{S.eyebrow}</Eyebrow><h2 className="h2 mt-5">{S.title}</h2></div>
-          <ol className="divide-y divide-forest/15 border-y border-forest/15 lg:col-span-7">
+    <section id="services" className="bg-paper">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-5">
+            <Eyebrow>{S.eyebrow}</Eyebrow>
+            <h2 className="h2 mt-5">{S.title}</h2>
+            <div className="mt-8 rounded-[20px] bg-forest p-6 text-stone sm:p-7">
+              <h3 className="font-display text-[22px] italic text-brass-light">{S.benefitsTitle}</h3>
+              <ul className="mt-4 space-y-3">{S.benefits.map((b) => <li key={b} className="flex gap-3 text-[15px] leading-relaxed text-stone/90"><span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-brass" aria-hidden />{b}</li>)}</ul>
+            </div>
+          </div>
+          <ol className="border-t border-forest/15 lg:col-span-7">
             {S.items.map(([t, d], i) => (
-              <li key={t} className="grid grid-cols-[3.2rem_1fr] gap-x-4 py-7 sm:grid-cols-[4.5rem_1fr]">
-                <span className="font-display text-[34px] leading-none text-brass-ink sm:text-[44px]" aria-hidden>0{i + 1}</span>
-                <div><h3 className="font-display text-[22px] leading-tight text-forest sm:text-[26px]">{t}</h3><p className="mt-2 max-w-xl text-[15.5px] leading-relaxed text-moss">{d}</p></div>
+              <li key={t} className="grid grid-cols-[3rem_1fr] gap-x-4 border-b border-forest/15 py-6 sm:grid-cols-[4.5rem_1fr] lg:py-7">
+                <span className="font-display text-[34px] italic leading-none text-brass-ink sm:text-[44px]" aria-hidden>0{i + 1}</span>
+                <div><h3 className="font-display text-[23px] leading-tight tracking-[-0.01em] text-forest sm:text-[27px]">{t}</h3><p className="mt-2 max-w-xl text-[15.5px] leading-relaxed text-moss">{d}</p></div>
               </li>
             ))}
           </ol>
         </div>
-        <figure className="relative mt-16 overflow-hidden rounded-[28px] bg-forest">
-          <img src={asset('images/lift-760.webp')} srcSet={`${asset('images/lift-760.webp')} 760w, ${asset('images/lift-1400.webp')} 1400w`} sizes="(min-width:1280px) 1216px, 92vw" width={1400} height={600} loading="lazy" decoding="async" alt={S.photoAlt} className="aspect-[21/9] w-full object-cover" />
-          <figcaption className="absolute bottom-3 left-3 rounded-full bg-forest/85 px-3 py-1 text-[12px] font-medium text-stone">{c.illustrative}</figcaption>
+        <figure className="relative mt-14 overflow-hidden rounded-[22px] bg-forest">
+          <img src={asset('images/lift-760.webp')} srcSet={`${asset('images/lift-760.webp')} 760w, ${asset('images/lift-1400.webp')} 1400w`} sizes="(min-width:1280px) 1216px, 92vw" width={1400} height={600} loading="lazy" decoding="async" alt={S.photoAlt} className="aspect-[16/10] w-full object-cover sm:aspect-[21/8]" />
+          <figcaption className="absolute bottom-3 left-3 rounded-full bg-forest-deep/85 px-3 py-1 text-[12px] font-medium text-stone">{c.illustrative}</figcaption>
         </figure>
-        <div className="mt-6 grid gap-6 lg:grid-cols-12">
-          <div className="rounded-[28px] bg-paper p-7 sm:p-9 lg:col-span-7">
-            <h3 className="font-display text-[24px] text-forest">{S.whyTitle}</h3>
-            <dl className="mt-6 grid gap-6 sm:grid-cols-2">
-              {S.why.map(([t, d]) => <div key={t} className="border-l-2 border-brass pl-4"><dt className="font-semibold text-forest">{t}</dt><dd className="mt-1 text-[14.5px] leading-relaxed text-moss">{d}</dd></div>)}
-            </dl>
-          </div>
-          <div className="flex flex-col rounded-[28px] bg-forest p-7 text-stone sm:p-9 lg:col-span-5">
-            <h3 className="font-display text-[24px]">{S.benefitsTitle}</h3>
-            <ul className="mt-5 space-y-3">{S.benefits.map((b) => <li key={b} className="flex gap-3 text-[15px] leading-relaxed text-stone/90"><span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brass" aria-hidden />{b}</li>)}</ul>
-            <p className="mt-auto border-t border-stone/15 pt-5 text-[13.5px] leading-relaxed text-moss-dark">{S.network}</p>
-          </div>
+        <div className="mt-10">
+          <h3 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brass-ink">{S.whyTitle}</h3>
+          <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-6 lg:grid-cols-4 lg:gap-x-8">
+            {S.why.map(([t, d]) => <div key={t} className="border-t border-brass-ink/50 pt-4"><dt className="font-display text-[18px] leading-snug text-forest sm:text-[20px]">{t}</dt><dd className="mt-1.5 text-[14px] leading-relaxed text-moss sm:text-[14.5px]">{d}</dd></div>)}
+          </dl>
+          <p className="mt-8 max-w-3xl text-[13.5px] leading-relaxed text-moss">{S.network}</p>
         </div>
       </div>
     </section>
@@ -349,16 +453,19 @@ function Awards() {
   const { c } = useI18n<Content>()
   const A = c.awards
   return (
-    <section id="awards" className="bg-paper">
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:py-28">
-        <div className="lg:col-span-4"><Eyebrow>{A.eyebrow}</Eyebrow><h2 className="h2 mt-5">{A.title}</h2></div>
-        <ol className="relative lg:col-span-8">
-          <span className="absolute bottom-3 left-[5.4rem] top-3 w-px bg-forest/15 sm:left-[7rem]" aria-hidden />
+    <section id="awards" className="dark bg-forest-deep text-stone">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="max-w-2xl"><Eyebrow dark>{A.eyebrow}</Eyebrow><h2 className="h2 mt-5">{A.title}</h2></div>
+        <ol className="relative mt-12 grid gap-0 lg:grid-cols-7 lg:gap-6">
+          <span className="absolute left-0 right-0 top-[52px] hidden h-px bg-stone/15 lg:block" aria-hidden />
           {A.items.map(([y, t, d], i) => (
-            <Reveal as="li" key={t} delay={i * 50} className="relative grid grid-cols-[5.4rem_1fr] gap-x-6 pb-9 last:pb-0 sm:grid-cols-[7rem_1fr]">
-              <span className={`font-display leading-none text-[26px] sm:text-[32px] ${i === 0 ? 'text-brass-ink' : 'text-forest'}`}>{y}</span>
-              <span className={`absolute left-[5.4rem] top-3 h-3 w-3 -translate-x-1/2 rounded-full border-2 sm:left-[7rem] ${i === 0 ? 'border-brass bg-brass' : 'border-forest/40 bg-paper'}`} aria-hidden />
-              <div className="pl-2"><h3 className="font-display text-[20px] leading-snug text-forest sm:text-[23px]">{t}</h3><p className="mt-1.5 text-[15px] leading-relaxed text-moss">{d}</p></div>
+            <Reveal as="li" key={t} delay={i * 40} className="relative grid grid-cols-[4.6rem_1fr] gap-x-4 border-b border-stone/10 py-4 lg:block lg:border-0 lg:py-0">
+              <span className={`font-display text-[26px] leading-none tracking-[-0.02em] lg:text-[34px] ${i === 0 ? 'text-brass-light' : 'text-stone'}`}>{y}</span>
+              <span className={`absolute left-0 top-[47px] hidden h-[11px] w-[11px] rounded-full border lg:block ${i === 0 ? 'border-brass bg-brass' : 'border-stone/40 bg-forest-deep'}`} aria-hidden />
+              <div className="lg:mt-12">
+                <h3 className="text-[15.5px] font-medium leading-snug text-stone">{t}</h3>
+                <p className="mt-1 text-[14px] leading-relaxed text-moss-dark">{d}</p>
+              </div>
             </Reveal>
           ))}
         </ol>
@@ -389,38 +496,32 @@ function Brief() {
   ]
   const msg = [B.msgHi, '', ...rows.filter(([, x]) => x !== B.blank).map(([k, x]) => `${k}: ${x}`), '', B.msgEnd].join('\n')
   const mail = `mailto:${BIZ.email}?subject=${encodeURIComponent(`${B.subject}${type >= 0 ? ` – ${B.types[type]}` : ''}`)}&body=${encodeURIComponent(msg)}`
-  const pill = (on: boolean) => `tap inline-flex items-center justify-center rounded-full border px-4 text-[14.5px] font-semibold transition ${on ? 'border-forest bg-forest text-stone' : 'border-forest/20 bg-paper text-forest hover:border-forest'}`
-  const group = (legend: string, opts: string[], val: number, set: (n: number) => void, name: string) => (
+  const pill = (on: boolean) => `tap inline-flex items-center justify-center rounded-full border px-3.5 text-[14px] font-medium transition ${on ? 'border-forest bg-forest text-stone' : 'border-forest/20 bg-paper text-forest hover:border-forest'}`
+  const group = (legend: string, opts: string[], val: number, set: (n: number) => void, nm: string, no: number) => (
     <fieldset>
-      <legend className="step">{legend}</legend>
+      <legend className="step"><span className="mr-2 font-display italic text-brass-ink">0{no}</span>{legend}</legend>
       <div className="mt-3 flex flex-wrap gap-2">
-        {opts.map((t, i) => <label key={t} className={`radio ${pill(val === i)}`}><input type="radio" name={name} className="sr-only" checked={val === i} onChange={() => set(i)} />{t}</label>)}
+        {opts.map((t, i) => <label key={t} className={`radio ${pill(val === i)}`}><input type="radio" name={nm} className="sr-only" checked={val === i} onChange={() => set(i)} />{t}</label>)}
       </div>
     </fieldset>
   )
   return (
-    <section id="brief" className="grid-paper bg-stone">
-      <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
-        <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-7"><Eyebrow>{B.eyebrow}</Eyebrow><h2 className="h2 mt-5">{B.title}</h2><p className="mt-4 max-w-2xl text-[16.5px] leading-relaxed text-moss">{B.sub}</p></div>
-          <figure className="relative overflow-hidden rounded-[24px] bg-stone-2 lg:col-span-4 lg:col-start-9">
-            <img src={asset('images/samples-560.webp')} srcSet={`${asset('images/samples-560.webp')} 560w, ${asset('images/samples-900.webp')} 900w`} sizes="(min-width:1024px) 400px, 92vw" width={900} height={675} loading="lazy" decoding="async" alt={B.photoAlt} className="aspect-[4/3] w-full object-cover" />
-            <figcaption className="absolute bottom-3 left-3 rounded-full bg-forest/85 px-3 py-1 text-[12px] font-medium text-stone">{c.illustrative}</figcaption>
-          </figure>
-        </div>
-        <div className="mt-12 grid gap-10 lg:grid-cols-12">
-          <form className="space-y-8 lg:col-span-6" onSubmit={(e) => e.preventDefault()}>
-            {group(B.type, B.types, type, setType, 'type')}
-            {group(B.scope, B.scopes, scope, setScope, 'scope')}
-            {group(B.when, B.whens, when, setWhen, 'when')}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div><label htmlFor="loc" className="step">{B.loc}</label><input id="loc" value={loc} onChange={(e) => setLoc(e.target.value.slice(0, 60))} placeholder={B.locPh} className="field mt-3" /></div>
-              <div><label htmlFor="area" className="step">{B.area}</label><input id="area" value={area} inputMode="numeric" onChange={(e) => setArea(e.target.value.replace(/[^\d,.]/g, '').slice(0, 9))} placeholder={B.areaPh} className="field mt-3" /></div>
-              <div><label htmlFor="bname" className="step">{B.name}</label><input id="bname" value={name} onChange={(e) => setName(e.target.value.slice(0, 50))} autoComplete="name" className="field mt-3" /></div>
-              <div><label htmlFor="company" className="step">{B.company}</label><input id="company" value={company} onChange={(e) => setCompany(e.target.value.slice(0, 60))} autoComplete="organization" className="field mt-3" /></div>
+    <section id="brief" className="bg-stone">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="max-w-3xl"><Eyebrow>{B.eyebrow}</Eyebrow><h2 className="h2 mt-5">{B.title}</h2><p className="mt-4 max-w-2xl text-[16.5px] leading-relaxed text-moss">{B.sub}</p></div>
+        <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14">
+          <form className="space-y-7 lg:col-span-7" onSubmit={(e) => e.preventDefault()}>
+            {group(B.type, B.types, type, setType, 'type', 1)}
+            {group(B.scope, B.scopes, scope, setScope, 'scope', 2)}
+            {group(B.when, B.whens, when, setWhen, 'when', 3)}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <div className="min-w-0"><label htmlFor="loc" className="step">{B.loc}</label><input id="loc" value={loc} onChange={(e) => setLoc(e.target.value.slice(0, 60))} placeholder={B.locPh} className="field mt-2.5" /></div>
+              <div className="min-w-0"><label htmlFor="area" className="step">{B.area}</label><input id="area" value={area} inputMode="numeric" onChange={(e) => setArea(e.target.value.replace(/[^\d,.]/g, '').slice(0, 9))} placeholder={B.areaPh} className="field mt-2.5" /></div>
+              <div className="min-w-0"><label htmlFor="bname" className="step">{B.name}</label><input id="bname" value={name} onChange={(e) => setName(e.target.value.slice(0, 50))} autoComplete="name" className="field mt-2.5" /></div>
+              <div className="min-w-0"><label htmlFor="company" className="step">{B.company}</label><input id="company" value={company} onChange={(e) => setCompany(e.target.value.slice(0, 60))} autoComplete="organization" className="field mt-2.5" /></div>
             </div>
           </form>
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-24">
               <div className="titleblock bg-paper text-forest" aria-live="polite">
                 <div className="grid grid-cols-[1fr_auto] border-b-2 border-forest">
@@ -429,16 +530,16 @@ function Brief() {
                 </div>
                 <dl className="grid grid-cols-2">
                   {rows.map(([k, x], i) => (
-                    <div key={k} className={`min-h-[78px] border-b border-forest/30 p-4 sm:p-5 ${i % 2 ? 'border-l border-forest/30' : ''}`}>
-                      <dt className="tb-k">{k}</dt><dd className={`mt-1.5 break-words text-[15px] font-semibold leading-snug ${x === B.blank ? 'text-moss/60' : ''}`}>{x}</dd>
+                    <div key={k} className={`min-h-[74px] min-w-0 border-b border-forest/30 p-4 ${i % 2 ? 'border-l border-forest/30' : ''}`}>
+                      <dt className="tb-k">{k}</dt><dd className={`mt-1.5 break-words text-[15px] font-medium leading-snug ${x === B.blank ? 'text-moss/60' : ''}`}>{x}</dd>
                     </div>
                   ))}
                 </dl>
-                <div className="flex items-center justify-between gap-3 px-4 py-3 text-[12.5px] sm:px-5"><span><span className="tb-k mr-2">{F.date}</span>{date}</span><span className="text-moss">B&amp;N Design Associate</span></div>
+                <div className="flex items-center justify-between gap-3 px-4 py-3 text-[12.5px]"><span><span className="tb-k mr-2">{F.date}</span>{date}</span><span className="text-moss">B&amp;N Design Associate</span></div>
               </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <a href={wa(msg)} target="_blank" rel="noopener" className="tap flex items-center justify-center gap-2 rounded-full bg-forest px-5 text-[15.5px] font-semibold text-stone transition hover:bg-forest-3"><WaIcon />{B.wa}</a>
-                <a href={mail} className="tap flex items-center justify-center gap-2 rounded-full border border-forest/30 bg-paper px-5 text-[15.5px] font-semibold text-forest transition hover:border-forest">{B.mail}</a>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <a href={wa(msg)} target="_blank" rel="noopener" className="tap lift flex h-[52px] items-center justify-center gap-2 rounded-full bg-forest px-5 text-[15.5px] font-semibold text-stone hover:bg-forest-3"><WaIcon />{B.wa}</a>
+                <a href={mail} className="tap lift flex h-[52px] items-center justify-center gap-2 rounded-full border border-forest/30 bg-paper px-5 text-[15.5px] font-semibold text-forest hover:border-forest">{B.mail}</a>
               </div>
               <p className="mt-3 text-center text-[13px] text-moss">{B.hint}</p>
             </div>
@@ -452,41 +553,42 @@ function Brief() {
 function Contact() {
   const { c } = useI18n<Content>()
   const C = c.contact
+  const link = 'inline-flex min-h-[44px] items-center gap-2 text-[17px] font-medium transition hover:text-brass-light'
   return (
-    <section id="contact" className="bg-forest text-stone">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:py-28">
-        <div className="lg:col-span-6">
+    <section id="contact" className="dark bg-forest text-stone">
+      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-12 lg:py-24">
+        <div className="lg:col-span-7">
           <Eyebrow dark>{C.eyebrow}</Eyebrow>
           <h2 className="h2 mt-5 text-stone">{C.title}</h2>
           <div className="mt-6"><StatusPill dark /></div>
-          <dl className="mt-10 grid gap-8 sm:grid-cols-2">
-            <div><dt className="dt">{C.office}</dt><dd className="mt-2"><a href={`tel:${BIZ.officeTel}`} className="inline-flex min-h-[44px] items-center text-[17px] font-semibold hover:text-brass">{BIZ.office}</a></dd></div>
-            <div><dt className="dt">{C.mobile}</dt><dd className="mt-2"><a href={wa(c.waMsg)} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 text-[17px] font-semibold hover:text-brass"><WaIcon className="h-4 w-4" />{BIZ.mobile}</a></dd></div>
-            <div><dt className="dt">{C.email}</dt><dd className="mt-2"><a href={`mailto:${BIZ.email}`} className="inline-flex min-h-[44px] items-center break-all text-[16px] font-semibold hover:text-brass">{BIZ.email}</a></dd></div>
-            <div><dt className="dt">{C.fax}</dt><dd className="mt-2 text-[16px]">{BIZ.fax}</dd></div>
-            <div className="sm:col-span-2"><dt className="dt">{C.address}</dt><dd className="mt-2 text-[16px] leading-relaxed">{BIZ.address}</dd></div>
-            <div className="sm:col-span-2"><dt className="dt">{C.hours}</dt><dd className="mt-2 text-[16px]">{C.hoursText}</dd></div>
+          <dl className="mt-10 grid gap-x-8 gap-y-7 border-t border-stone/12 pt-8 sm:grid-cols-2">
+            <div><dt className="dt">{C.office}</dt><dd className="mt-1"><a href={`tel:${BIZ.officeTel}`} className={link}><PhoneIcon className="h-4 w-4 text-brass" />{BIZ.office}</a></dd></div>
+            <div><dt className="dt">{C.mobile}</dt><dd className="mt-1"><a href={wa(c.waMsg)} target="_blank" rel="noopener" className={link}><WaIcon className="h-4 w-4 text-brass" />{BIZ.mobile}</a></dd></div>
+            <div><dt className="dt">{C.email}</dt><dd className="mt-1"><a href={`mailto:${BIZ.email}`} className={`${link} break-all text-[16px]`}>{BIZ.email}</a></dd></div>
+            <div><dt className="dt">{C.fax}</dt><dd className="mt-1 flex min-h-[44px] items-center text-[16px] text-stone/90">{BIZ.fax}</dd></div>
+            <div><dt className="dt">{C.address}</dt><dd className="mt-2 text-[16px] leading-relaxed text-stone/90">{BIZ.address}</dd></div>
+            <div><dt className="dt">{C.hours}</dt><dd className="mt-2 text-[16px] text-stone/90">{C.hoursText}</dd></div>
           </dl>
         </div>
-        <div className="lg:col-span-6">
-          <a href={BIZ.maps} target="_blank" rel="noopener" className="group block overflow-hidden rounded-[28px] border border-stone/12 bg-forest-2">
-            <svg viewBox="0 0 520 340" className="h-auto w-full" aria-hidden>
-              <rect width="520" height="340" fill="#1A3F37" />
-              <g stroke="#24524A" strokeWidth="1"><path d="M0 40H520M0 80H520M0 120H520M0 160H520M0 200H520M0 240H520M0 280H520M0 320H520M40 0V340M80 0V340M120 0V340M160 0V340M200 0V340M240 0V340M280 0V340M320 0V340M360 0V340M400 0V340M440 0V340M480 0V340" /></g>
-              <g stroke="#2F6155" strokeWidth="16" fill="none" strokeLinecap="round"><path d="M-10 230 C140 200 300 250 530 190" /><path d="M170 -10 L230 350" /></g>
-              <g fill="#24524A" stroke="#2F6155">{[[260, 90], [330, 90], [400, 90], [260, 150], [330, 150]].map(([x, y]) => <rect key={`${x}${y}`} x={x} y={y} width="56" height="42" rx="3" />)}</g>
-              <rect x="330" y="150" width="56" height="42" rx="3" fill="#C9A15A" />
-              <text x="358" y="177" textAnchor="middle" fontSize="15" fontFamily="Marcellus, serif" fill="#12302A">38-1</text>
-              <text x="26" y="312" fill="#A9BDB5" fontSize="12" fontFamily="Hanken Grotesk, sans-serif" letterSpacing="2.5">RAMPAI BUSINESS PARK · 53300</text>
+        <div className="lg:col-span-5">
+          <a href={BIZ.maps} target="_blank" rel="noopener" className="group block overflow-hidden rounded-[22px] bg-forest-2 ring-1 ring-stone/10">
+            <svg viewBox="0 0 520 320" className="h-auto w-full" aria-hidden>
+              <rect width="520" height="320" fill="#1A3F37" />
+              <g stroke="#24524A" strokeWidth="1"><path d="M0 40H520M0 80H520M0 120H520M0 160H520M0 200H520M0 240H520M0 280H520M40 0V320M80 0V320M120 0V320M160 0V320M200 0V320M240 0V320M280 0V320M320 0V320M360 0V320M400 0V320M440 0V320M480 0V320" /></g>
+              <g stroke="#2F6155" strokeWidth="14" fill="none" strokeLinecap="round"><path d="M-10 220 C140 190 300 240 530 180" /><path d="M170 -10 L230 330" /></g>
+              <g fill="#24524A" stroke="#2F6155">{[[260, 80], [330, 80], [400, 80], [260, 140], [330, 140]].map(([x, y]) => <rect key={`${x}${y}`} x={x} y={y} width="56" height="42" rx="3" />)}</g>
+              <rect x="330" y="140" width="56" height="42" rx="3" fill="#C9A15A" />
+              <text x="358" y="167" textAnchor="middle" fontSize="16" fontStyle="italic" fontFamily="Newsreader, serif" fill="#0E2420">38-1</text>
+              <text x="26" y="296" fill="#A9BDB5" fontSize="12" fontFamily="Geist, sans-serif" letterSpacing="2.5">RAMPAI BUSINESS PARK · 53300</text>
             </svg>
             <div className="flex items-center justify-between gap-4 p-5">
-              <div><p className="font-display text-[19px]">B&amp;N Design Associate</p><p className="text-[13.5px] text-moss-dark">38-1, Jalan Rampai Niaga 4</p></div>
-              <span className="shrink-0 rounded-full bg-brass px-3 py-1.5 text-[13px] font-semibold text-forest transition group-hover:bg-stone">{C.maps} ↗</span>
+              <div><p className="font-display text-[20px]">B&amp;N Design Associate</p><p className="text-[13.5px] text-moss-dark">38-1, Jalan Rampai Niaga 4</p></div>
+              <span className="shrink-0 rounded-full bg-brass px-3 py-1.5 text-[13px] font-semibold text-forest-deep transition group-hover:bg-stone">{C.maps} ↗</span>
             </div>
           </a>
           <div className="mt-4 flex flex-wrap gap-x-6">
-            <a href={BIZ.directions} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-semibold text-brass underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.directions} ↗</a>
-            <a href={BIZ.facebook} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-semibold text-brass underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.facebook} ↗</a>
+            <a href={BIZ.directions} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-medium text-brass-light underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.directions} ↗</a>
+            <a href={BIZ.facebook} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-medium text-brass-light underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.facebook} ↗</a>
           </div>
         </div>
       </div>
@@ -497,13 +599,13 @@ function Contact() {
 function Faq() {
   const { c } = useI18n<Content>()
   return (
-    <section id="faq" className="bg-paper">
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:py-28">
+    <section id="faq" className="bg-stone">
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-12 lg:py-24">
         <div className="lg:col-span-4"><Eyebrow>{c.faq.eyebrow}</Eyebrow><h2 className="h2 mt-5">{c.faq.title}</h2></div>
-        <div className="divide-y divide-forest/10 border-y border-forest/10 lg:col-span-8">
+        <div className="divide-y divide-forest/12 border-y border-forest/12 lg:col-span-8">
           {c.faq.items.map(([q, a]) => (
             <details key={q} className="group">
-              <summary className="flex min-h-[64px] cursor-pointer items-center justify-between gap-6 py-4 font-display text-[19px] text-forest sm:text-[21px]">
+              <summary className="flex min-h-[64px] cursor-pointer items-center justify-between gap-6 py-4 font-display text-[20px] leading-snug tracking-[-0.01em] text-forest sm:text-[22px]">
                 {q}
                 <span className="faq-i grid h-9 w-9 shrink-0 place-items-center rounded-full border border-forest/20 font-sans text-lg transition" aria-hidden>+</span>
               </summary>
@@ -519,8 +621,8 @@ function Faq() {
 function Footer() {
   const { c } = useI18n<Content>()
   return (
-    <footer className="bg-[#0B201C] text-stone">
-      <div className="mx-auto max-w-7xl px-5 pb-28 pt-14 sm:px-8 sm:pb-12">
+    <footer className="bg-forest-night text-stone">
+      <div className="mx-auto max-w-7xl px-5 pb-28 pt-14 sm:px-8 lg:pb-12">
         <div className="flex flex-col justify-between gap-10 lg:flex-row">
           <div><Logo light /><p className="mt-4 text-[14.5px] text-stone/75">{c.footer.tagline}</p></div>
           <ul className="grid gap-x-10 gap-y-1 text-[15px] sm:grid-cols-2">
@@ -532,7 +634,7 @@ function Footer() {
           </ul>
           <a href="#top" className="tap inline-flex items-center gap-2 self-start rounded-full border border-stone/20 px-5 text-sm font-semibold transition hover:border-brass hover:text-brass">{c.footer.toTop} <span aria-hidden>↑</span></a>
         </div>
-        <p className="mt-12 text-[12.5px] text-stone/70">{c.footer.note}</p>
+        <p className="mt-12 text-[12.5px] leading-relaxed text-stone/70">{c.footer.note}</p>
         <div className="mt-6 flex flex-col gap-3 border-t border-stone/10 pt-6 text-[13px] text-stone/75 sm:flex-row sm:items-center sm:justify-between">
           <p>{c.footer.pitch}</p>
           <a href={PITCH_WA} target="_blank" rel="noopener" className="tap inline-flex shrink-0 items-center gap-2 font-semibold text-brass hover:text-stone"><WaIcon className="h-4 w-4" />{c.footer.pitchLink}</a>
@@ -543,19 +645,24 @@ function Footer() {
   )
 }
 
-function Fab() {
+function MobileBar() {
   const { c } = useI18n<Content>()
   const [show, setShow] = useState(false)
   useEffect(() => {
-    const on = () => setShow(window.scrollY > window.innerHeight * 0.9)
+    const on = () => setShow(window.scrollY > window.innerHeight * 0.7)
     on(); window.addEventListener('scroll', on, { passive: true })
     return () => window.removeEventListener('scroll', on)
   }, [])
+  const t = show ? 0 : -1
   return (
-    <a href={wa(c.waMsg)} target="_blank" rel="noopener" aria-label={c.a11y.fab} aria-hidden={!show} tabIndex={show ? 0 : -1} data-fab
-      className={`fixed bottom-5 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-forest text-stone shadow-[0_12px_30px_rgba(18,48,42,.4)] ring-2 ring-brass/60 transition duration-300 md:hidden ${show ? 'opacity-100' : 'pointer-events-none translate-y-4 opacity-0'}`}>
-      <WaIcon className="h-6 w-6" />
-    </a>
+    <nav aria-label={c.a11y.bar} aria-hidden={!show} data-fab
+      className={`fixed inset-x-0 bottom-0 z-30 border-t border-stone/10 bg-forest-deep/95 px-3 pb-[max(.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur transition duration-300 lg:hidden ${show ? '' : 'pointer-events-none translate-y-full opacity-0'}`}>
+      <div className="mx-auto grid max-w-md grid-cols-[1fr_1.35fr_auto] gap-2">
+        <a href="#brief" tabIndex={t} className="inline-flex h-12 items-center justify-center rounded-full border border-stone/25 text-[15px] font-semibold text-stone">{c.briefCta}</a>
+        <a href={wa(c.waMsg)} target="_blank" rel="noopener" tabIndex={t} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brass text-[15px] font-semibold text-forest-deep"><WaIcon />{c.waCta}</a>
+        <a href={`tel:${BIZ.officeTel}`} tabIndex={t} aria-label={`${c.call} ${BIZ.office}`} className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-stone text-forest-deep"><PhoneIcon className="h-[18px] w-[18px]" /></a>
+      </div>
+    </nav>
   )
 }
 
@@ -569,12 +676,11 @@ export default function App() {
   const active = useActiveSection(ids)
   return (
     <>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-forest focus:px-4 focus:py-2 focus:text-stone">{c.a11y.skip}</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-brass focus:px-4 focus:py-2 focus:text-forest-deep">{c.a11y.skip}</a>
       <Header active={active} onMenu={() => setOpen((o) => !o)} menuOpen={open} btnRef={btnRef} />
       {open && <MobileMenu close={closeMenu} active={active} />}
       <main id="main" tabIndex={-1} className="outline-none">
         <Hero />
-        <Clients />
         <Work />
         <Projects />
         <Services />
@@ -584,7 +690,7 @@ export default function App() {
         <Faq />
       </main>
       <Footer />
-      <Fab />
+      <MobileBar />
     </>
   )
 }

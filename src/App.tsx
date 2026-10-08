@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { asset, useI18n } from './i18n'
-import { useActiveSection, useDialogFlag, useMenu } from './hooks'
+import { useActiveSection, useDialogFlag, useMenu, useSwipe, useWindowLoaded } from './hooks'
 import { useOpenStatus } from './hours'
 import { Reveal } from './Reveal'
-import { BIZ, CLIENTS, PROJECTS, ROOM_IDS, WEEK, type Content, type RoomId, type Sector } from './content'
+import { BIZ, CLIENTS, HOMES, HOTEL_URL, PROJECTS, ROOM_IDS, WEEK, type Content, type RoomId, type Sector } from './content'
 
 const PITCH_WA = 'https://wa.me/601151198497'
 const wa = (t: string) => `https://wa.me/${BIZ.wa}?text=${encodeURIComponent(t)}`
-const IDS = ['work', 'projects', 'services', 'awards', 'brief', 'contact']
+const IDS = ['work', 'homes', 'projects', 'services', 'awards', 'contact']
 const reduced = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function WaIcon({ className = 'h-5 w-5' }: { className?: string }) {
@@ -102,16 +102,12 @@ function MobileMenu({ close, active }: { close: () => void; active: string }) {
   )
 }
 
-const TIER_COLOR = ['#E4E2DA', '#DCC08A', '#C9CFCB', '#EDE8DF']
-const NUMERAL = ['I', 'II', 'III', 'IV']
 
 function Hero() {
   const { c, lang } = useI18n<Content>()
-  const [lead, ...rest] = c.plaques
   return (
     <section id="top" className="dark relative overflow-hidden bg-forest-deep text-stone">
       <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden />
-      <span className="amp pointer-events-none absolute -right-[4vw] top-[-2vw] hidden select-none text-[44vw] lg:block xl:text-[38vw]" aria-hidden>&amp;</span>
       <div className="relative mx-auto grid max-w-7xl gap-12 px-5 pb-12 pt-8 sm:px-8 sm:pt-14 lg:grid-cols-12 lg:gap-10 lg:pb-16 lg:pt-20">
         <div className="lg:col-span-7">
           <p className="inline-flex items-start gap-2.5 text-[12.5px] font-medium tracking-[0.04em] text-brass sm:text-[13px]">
@@ -123,34 +119,16 @@ function Hero() {
           </h1>
           <p className="mt-6 max-w-[34rem] text-[16.5px] leading-relaxed text-moss-dark sm:text-[18px]">{c.hero.sub}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
-            <a href="#brief" className="tap lift inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-brass px-7 text-[16px] font-semibold text-forest-deep hover:bg-brass-light">{c.hero.cta}<span className="arrow-r"><Arrow /></span></a>
-            <a href="#work" className="tap hidden items-center gap-2 text-[15.5px] font-medium text-stone underline decoration-brass/60 underline-offset-[6px] transition hover:decoration-brass sm:inline-flex">{c.hero.cta2}</a>
+            <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap lift inline-flex h-[52px] items-center justify-center gap-2.5 rounded-full bg-brass px-7 text-[16px] font-semibold text-forest-deep hover:bg-brass-light"><WaIcon />{c.hero.cta}</a>
+            <a href="#work" className="tap inline-flex items-center justify-center gap-2 text-[15.5px] font-medium text-stone underline decoration-brass/60 underline-offset-[6px] transition hover:decoration-brass sm:inline-flex">{c.hero.cta2}</a>
           </div>
         </div>
-        <div className="lg:col-span-5 lg:pt-3">
-          <section aria-label={c.a11y.ledger} className="relative">
-            <div className="flex items-baseline justify-between border-b border-brass/50 pb-3 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-brass"><span>Atap Design Award</span><span className="font-display text-[20px] normal-case tracking-normal">2023</span></div>
-            <ol>
-              <li className="grid grid-cols-[2.2rem_1fr] border-b border-stone/12 py-5 sm:py-6">
-                <span className="pt-2 font-display text-[15px] italic text-brass" aria-hidden>{NUMERAL[0]}</span>
-                <div>
-                  <p className="font-display text-[44px] italic leading-none tracking-[-0.02em] sm:text-[56px]" style={{ color: TIER_COLOR[0] }}>{lead.tier}</p>
-                  <p className="mt-3 text-[16px] font-medium text-stone">{lead.project}</p>
-                  <p className="text-[14px] text-moss-dark">{lead.place}</p>
-                </div>
-              </li>
-              {rest.map((p, i) => (
-                <li key={p.tier} className="grid grid-cols-[2.2rem_1fr] items-baseline border-b border-stone/12 py-3.5 sm:py-4">
-                  <span className="font-display text-[15px] italic text-brass" aria-hidden>{NUMERAL[i + 1]}</span>
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-                    <p className="font-display text-[24px] leading-tight sm:text-[27px]" style={{ color: TIER_COLOR[i + 1] }}>{p.tier}</p>
-                    <p className="text-[14px] text-moss-dark">{p.project}{p.place && <span className="text-stone/70">, {p.place}</span>}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
+        <figure className="lg:col-span-5 lg:self-center">
+          <div className="relative overflow-hidden rounded-[18px] bg-forest ring-1 ring-stone/10">
+            <img src={asset('images/hero-720.webp')} srcSet={`${asset('images/hero-480.webp')} 480w, ${asset('images/hero-720.webp')} 720w, ${asset('images/hero-960.webp')} 960w`} sizes="(min-width:1280px) 500px, (min-width:1024px) 40vw, (min-width:640px) 92vw, 260px" width={960} height={720} alt={c.hero.photo} fetchPriority="high" decoding="async" className="aspect-[4/3] w-full object-cover" />
+          </div>
+          <figcaption className="mt-3 text-[13px] leading-snug text-moss-dark"><span className="text-stone/90">{c.hero.photo}</span><br />{c.hero.credit}</figcaption>
+        </figure>
       </div>
       <dl className="relative mx-auto grid max-w-7xl grid-cols-2 border-t border-stone/12 px-5 sm:grid-cols-3 sm:px-8">
         {c.stats.map(([n, l], i) => (
@@ -164,71 +142,10 @@ function Hero() {
   )
 }
 
-/** Abstract plates: colour and texture fields drawn from B&N's notes for each space. */
-function Plate({ id }: { id: RoomId }) {
-  const g = `p-${id}`
-  if (id === 'atoti') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs>
-        <linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#081613" /><stop offset="1" stopColor="#24524A" /></linearGradient>
-        <radialGradient id={`${g}r`} cx=".5" cy="1" r=".7"><stop offset="0" stopColor="#C9A15A" stopOpacity=".35" /><stop offset="1" stopColor="#C9A15A" stopOpacity="0" /></radialGradient>
-      </defs>
-      <rect width="480" height="360" fill={`url(#${g})`} />
-      <path d="M40 360 V200 C40 90 140 40 240 40 C340 40 440 90 440 200 V360" fill="none" stroke="#C9A15A" strokeOpacity=".35" />
-      <rect width="480" height="360" fill={`url(#${g}r)`} />
-      {Array.from({ length: 30 }, (_, i) => { const x = 14 + i * 15.6; const h = 40 + ((i * 53) % 9) * 19 + (i % 2) * 14; return <g key={i}><line x1={x} y1="0" x2={x} y2={h} stroke="#C9A15A" strokeOpacity={0.35 + (i % 3) * 0.2} strokeWidth="1.1" /><circle cx={x} cy={h + 3} r="2" fill="#DCC08A" opacity=".85" /></g> })}
-      {[[150, 230, 1], [214, 200, 1.3], [292, 244, 1], [330, 206, 0.8], [252, 270, 0.75]].map(([x, y, s]) => <path key={x} d={`M${x} ${y} q ${7 * s} ${-6 * s} ${14 * s} 0 q ${7 * s} ${-6 * s} ${14 * s} 0`} fill="none" stroke="#EDE8DF" strokeWidth="1.6" strokeLinecap="round" opacity=".85" />)}
-    </svg>
-  )
-  if (id === 'belian') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs>
-        <radialGradient id={g} cx=".55" cy=".35" r=".6"><stop offset="0" stopColor="#E8C98A" /><stop offset=".5" stopColor="#7A5A22" /><stop offset="1" stopColor="#12302A" /></radialGradient>
-        <linearGradient id={`${g}s`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3A2614" /><stop offset=".5" stopColor="#5C3D1E" /><stop offset="1" stopColor="#2A1B0E" /></linearGradient>
-      </defs>
-      <rect width="480" height="360" fill={`url(#${g})`} />
-      {Array.from({ length: 22 }, (_, i) => <rect key={i} x={i * 22 - 2} y="0" width={12 + (i % 3) * 2} height="360" fill={`url(#${g}s)`} />)}
-      {[[90, 40, 70], [210, 10, 90], [330, 50, 80], [440, 20, 70]].map(([x, y, r]) => <circle key={x} cx={x} cy={y} r={r} fill="#1A3F37" opacity=".55" />)}
-      <rect x="0" y="262" width="480" height="2" fill="#C9A15A" opacity=".8" />
-      <rect x="0" y="264" width="480" height="96" fill="#12302A" opacity=".72" />
-    </svg>
-  )
-  if (id === 'terabai') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs><radialGradient id={g} cx=".5" cy=".5" r=".75"><stop offset="0" stopColor="#B4483A" /><stop offset="1" stopColor="#4A1A14" /></radialGradient></defs>
-      <rect width="480" height="360" fill={`url(#${g})`} />
-      {[0, 1, 2, 3].map((k) => <path key={k} d={`M240 ${24 + k * 20} C${304 - k * 8} ${56 + k * 14} ${326 - k * 16} ${120 + k * 8} ${326 - k * 16} 180 C${326 - k * 16} ${240 - k * 8} ${304 - k * 8} ${304 - k * 14} 240 ${336 - k * 20} C${176 + k * 8} ${304 - k * 14} ${154 + k * 16} ${240 - k * 8} ${154 + k * 16} 180 C${154 + k * 16} ${120 + k * 8} ${176 + k * 8} ${56 + k * 14} 240 ${24 + k * 20} Z`} fill="none" stroke={k === 0 ? '#DCC08A' : '#EDE8DF'} strokeOpacity={k === 0 ? 1 : 0.55 - k * 0.1} strokeWidth={k === 0 ? 1.6 : 1} />)}
-      <path d="M240 118 c22 0 28 28 9 34 c-16 6 -24 -14 -9 -18 M240 242 c-22 0 -28 -28 -9 -34 c16 -6 24 14 9 18 M208 180 c0 -22 28 -28 34 -9 c6 16 -14 24 -18 9 M272 180 c0 22 -28 28 -34 9 c-6 -16 14 -24 18 -9" fill="none" stroke="#DCC08A" strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="240" cy="180" r="5" fill="#DCC08A" />
-      {Array.from({ length: 9 }, (_, i) => <line key={i} x1={30 + i * 6} y1="0" x2={30 + i * 6} y2="360" stroke="#DCC08A" strokeOpacity=".18" />)}
-      {Array.from({ length: 9 }, (_, i) => <line key={`r${i}`} x1={402 + i * 6} y1="0" x2={402 + i * 6} y2="360" stroke="#DCC08A" strokeOpacity=".18" />)}
-    </svg>
-  )
-  if (id === 'rooms') return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs>
-        <linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#B9D3CC" /><stop offset="1" stopColor="#7FA8A0" /></linearGradient>
-        <pattern id={`${g}p`} width="16" height="11" patternUnits="userSpaceOnUse"><path d="M0 11 Q8 0 16 11" fill="none" stroke="#C9A15A" strokeWidth="1" /></pattern>
-      </defs>
-      <rect width="480" height="150" fill={`url(#${g})`} />
-      <path d="M0 112 C70 84 130 104 190 72 C240 48 300 82 350 62 C400 42 440 66 480 52 V150 H0 Z" fill="#24524A" />
-      <path d="M0 132 C90 116 160 136 240 122 C330 108 400 132 480 118 V150 H0 Z" fill="#12302A" />
-      <rect y="150" width="480" height="58" fill="#12302A" /><rect y="150" width="480" height="58" fill={`url(#${g}p)`} opacity=".7" />
-      <rect y="208" width="480" height="152" fill="#E2DBCE" />
-      {Array.from({ length: 7 }, (_, k) => <path key={k} d={`M${40 + k * 10} ${330 - k * 9} C160 ${286 - k * 10} 320 ${286 - k * 10} ${440 - k * 10} ${330 - k * 9}`} fill="none" stroke="#24524A" strokeWidth="1.1" opacity={0.65 - k * 0.07} />)}
-    </svg>
-  )
-  return (
-    <svg viewBox="0 0 480 360" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs><linearGradient id={g} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#3C2A4A" /><stop offset=".55" stopColor="#B04A35" /><stop offset="1" stopColor="#ECB063" /></linearGradient></defs>
-      <rect width="480" height="360" fill={`url(#${g})`} />
-      <circle cx="240" cy="262" r="70" fill="#F6D08A" opacity=".95" />
-      {[0, 1, 2].map((k) => <line key={k} x1="60" x2="420" y1={300 + k * 16} y2={300 + k * 16} stroke="#F6D08A" strokeOpacity={0.5 - k * 0.15} />)}
-      <path d="M0 0 H480 V360 H410 C410 196 340 112 240 112 C140 112 70 196 70 360 H0 Z" fill="#0A1B18" />
-      {[100, 128, 158, 322, 352, 380].map((x, i) => <line key={x} x1={x} y1="0" x2={x} y2={70 + (i % 3) * 26} stroke="#24524A" strokeWidth="1.4" />)}
-      {[[188, 168], [292, 182]].map(([x, y]) => <path key={x} d={`M${x} ${y} q 8 -6 16 0 q 8 -6 16 0`} fill="none" stroke="#0A1B18" strokeWidth="2" strokeLinecap="round" />)}
-    </svg>
-  )
+function RoomPhoto({ id, alt, eager = false }: { id: RoomId; alt: string; eager?: boolean }) {
+  const loaded = useWindowLoaded()
+  if (!eager && !loaded) return <div role="img" aria-label={alt} className="h-full w-full bg-forest" />
+  return <img src={asset(`images/m-${id}-560.webp`)} srcSet={`${asset(`images/m-${id}-560.webp`)} 560w, ${asset(`images/m-${id}-960.webp`)} 960w`} sizes="(min-width:1280px) 700px, (min-width:768px) 56vw, 300px" width={960} height={720} loading={eager ? undefined : 'lazy'} fetchPriority={eager ? undefined : 'low'} decoding="async" alt={alt} className="h-full w-full object-cover" />
 }
 
 function Rail({ label, count, children, prev, next }: { label: string; count: number; children: ReactNode; prev: string; next: string }) {
@@ -295,7 +212,7 @@ function Work() {
           </div>
           <div className="hidden md:col-span-7 md:block">
             <div id="room-panel" role="tabpanel" aria-labelledby={`tab-${room}`} className="lg:sticky lg:top-24">
-              <div key={room} className="plate-in relative aspect-[4/3] overflow-hidden rounded-[22px] ring-1 ring-stone/10"><Plate id={room} />
+              <div key={room} className="plate-in relative aspect-[4/3] overflow-hidden rounded-[22px] bg-forest-2 ring-1 ring-stone/10"><RoomPhoto id={room} alt={`${R.name}, ${R.kind.split(' · ')[0]}, Mercure Miri City Centre`} />
                 <span className="absolute left-4 top-4 rounded-full bg-forest-deep/80 px-3 py-1 font-display text-[14px] italic text-brass-light">0{ri + 1} / 05</span>
               </div>
               <div className="mt-7 grid gap-x-10 gap-y-4 lg:grid-cols-[1fr_auto]">
@@ -306,7 +223,7 @@ function Work() {
                 </div>
                 <ul className="flex flex-wrap content-start gap-2 lg:max-w-[13rem] lg:flex-col lg:items-start">{R.tags.map((t) => <li key={t} className="rounded-full border border-stone/20 px-3 py-1 text-[13px] text-stone/85">{t}</li>)}</ul>
               </div>
-              <p className="mt-6 text-[12.5px] text-moss-dark">{W.illus}</p>
+              <p className="mt-6 text-[12.5px] text-moss-dark">{W.credit} <a href={HOTEL_URL} target="_blank" rel="noopener" className="inline-flex min-h-[24px] items-center text-stone/90 underline decoration-brass/50 underline-offset-2 hover:decoration-brass">{W.hotel} ↗</a></p>
             </div>
           </div>
         </div>
@@ -318,7 +235,7 @@ function Work() {
               const X = W.rooms[id]
               return (
                 <li key={id} className="w-[84%] shrink-0 overflow-hidden rounded-[20px] bg-forest-2 ring-1 ring-stone/10 sm:w-[60%]">
-                  <div className="relative aspect-[4/3]"><Plate id={id} /><span className="absolute left-3 top-3 rounded-full bg-forest-deep/80 px-2.5 py-0.5 font-display text-[13px] italic text-brass-light">0{i + 1} / 05</span></div>
+                  <div className="relative aspect-[4/3] bg-forest"><RoomPhoto id={id} alt={`${X.name}, ${X.kind.split(' · ')[0]}, Mercure Miri City Centre`} /><span className="absolute left-3 top-3 rounded-full bg-forest-deep/80 px-2.5 py-0.5 font-display text-[13px] italic text-brass-light">0{i + 1} / 05</span></div>
                   <div className="p-5">
                     <p className="text-[11.5px] font-semibold uppercase tracking-[0.18em] text-brass">{X.kind}</p>
                     <h3 className="mt-1.5 font-display text-[30px] leading-none tracking-[-0.01em]">{X.name}</h3>
@@ -328,9 +245,98 @@ function Work() {
               )
             })}
           </Rail>
-          <p className="mt-4 text-[12.5px] text-moss-dark">{W.illus}</p>
+          <p className="mt-4 text-[12.5px] text-moss-dark">{W.credit} <a href={HOTEL_URL} target="_blank" rel="noopener" className="inline-flex min-h-[24px] items-center text-stone/90 underline decoration-brass/50 underline-offset-2">{W.hotel} ↗</a></p>
         </div>
       </div>
+    </section>
+  )
+}
+
+const himg = (n: string) => asset(`images/r-${n}.webp`)
+
+function HomeDialog({ i, setI }: { i: number; setI: (n: number | null) => void }) {
+  const { c } = useI18n<Content>()
+  const H = c.homes
+  const ref = useRef<HTMLDialogElement>(null)
+  const [k, setK] = useState(0)
+  useDialogFlag()
+  const h = HOMES[i]
+  const n = h.imgs.length
+  const go = useCallback((d: number) => setK((x) => (x + d + n) % n), [n])
+  const swipe = useSwipe(go)
+  useEffect(() => { const d = ref.current; if (d && !d.open) d.showModal() }, [])
+  useEffect(() => { setK(0) }, [i])
+  useEffect(() => {
+    const kb = (e: KeyboardEvent) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1) }
+    window.addEventListener('keydown', kb); return () => window.removeEventListener('keydown', kb)
+  }, [go])
+  const t = H.items[h.id]
+  const name = h.imgs[k]
+  return (
+    <dialog ref={ref} onClose={() => setI(null)} onClick={(e) => { if (e.target === ref.current) ref.current?.close() }} aria-labelledby="hd-title" className="pd">
+      <button type="button" onClick={() => ref.current?.close()} aria-label={c.a11y.close} className="tap absolute right-3 top-3 z-10 grid place-items-center rounded-full bg-paper/90 text-2xl leading-none text-forest shadow-sm hover:bg-paper" autoFocus>×</button>
+      <div className="grid max-h-[inherit] overflow-y-auto lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="relative flex items-center justify-center bg-forest-night" {...swipe}>
+          <img key={name} src={himg(name)} alt={H.alts[name]} className="pd-img max-h-[62dvh] w-auto max-w-full object-contain lg:max-h-[80dvh]" />
+          {n > 1 && <>
+            <button type="button" onClick={() => go(-1)} aria-label={c.a11y.prevPhoto} className="tap absolute left-2 top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-paper/85 text-forest hover:bg-paper"><Arrow dir="left" /></button>
+            <button type="button" onClick={() => go(1)} aria-label={c.a11y.nextPhoto} className="tap absolute right-2 top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-paper/85 text-forest hover:bg-paper"><Arrow /></button>
+          </>}
+        </div>
+        <div className="flex min-w-0 flex-col p-6 sm:p-8">
+          <p className="pr-10 text-[12px] font-semibold uppercase tracking-[0.2em] text-brass-ink">{H.eyebrow}{n > 1 && <> · {c.a11y.photo} {k + 1}/{n}</>}</p>
+          <h3 id="hd-title" className="mt-2 font-display text-[30px] leading-[1.05] tracking-[-0.015em] text-forest sm:text-[36px]">{t.name}</h3>
+          {t.place && <p className="mt-2 text-[15px] text-moss">{t.place}</p>}
+          <p className="mt-4 text-[15.5px] leading-relaxed text-forest">{t.rooms}</p>
+          <p className="mt-2 text-[14px] text-moss">{H.alts[name]}</p>
+          {n > 1 && (
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {h.imgs.map((m, j) => (
+                <li key={m}><button type="button" onClick={() => setK(j)} aria-label={`${c.a11y.photo} ${j + 1}`} aria-current={j === k ? 'true' : undefined} className={`block h-12 w-16 overflow-hidden rounded-md ring-2 transition ${j === k ? 'ring-brass-ink' : 'ring-transparent opacity-75 hover:opacity-100'}`}><img src={asset(`images/rc-${m}-480.webp`)} alt="" loading="lazy" className="h-full w-full object-cover" /></button></li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-auto pt-6 text-[12.5px] leading-relaxed text-moss">{H.credit}</p>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
+function Homes() {
+  const { c } = useI18n<Content>()
+  const H = c.homes
+  const [open, setOpen] = useState<number | null>(null)
+  return (
+    <section id="homes" className="bg-paper">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
+        <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7"><Eyebrow>{H.eyebrow}</Eyebrow><h2 className="h2 mt-5">{H.title}</h2></div>
+          <p className="text-[16px] leading-relaxed text-moss lg:col-span-5">{H.sub}</p>
+        </div>
+        <ul className="mt-10 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-5 lg:mt-12 lg:grid-cols-3 lg:gap-y-10">
+          {HOMES.map((h, i) => {
+            const t = H.items[h.id]
+            return (
+              <li key={h.id} className="min-w-0">
+                <Reveal>
+                  <button type="button" onClick={() => setOpen(i)} aria-haspopup="dialog" className="tile group block w-full rounded-[14px] text-left">
+                    <span className="relative block overflow-hidden rounded-[14px] bg-stone">
+                      <img src={asset(`images/rc-${h.imgs[0]}-480.webp`)} width={480} height={320} loading="lazy" decoding="async" alt="" className="aspect-[3/2] w-full object-cover" />
+                      {h.imgs.length > 1 && <span className="absolute bottom-2 right-2 rounded-full bg-forest-deep/80 px-2.5 py-0.5 text-[12px] font-medium text-stone">{h.imgs.length} {H.photos}</span>}
+                    </span>
+                    <span className="mt-3 block font-display text-[19px] leading-tight tracking-[-0.01em] text-forest group-hover:underline group-hover:decoration-brass group-hover:underline-offset-4 sm:text-[23px]">{t.name}</span>
+                    <span className="mt-1 block text-[13.5px] leading-snug text-moss sm:text-[14.5px]">{t.place || t.rooms}</span>
+                    <span className="sr-only">, {H.view}</span>
+                  </button>
+                </Reveal>
+              </li>
+            )
+          })}
+        </ul>
+        <p className="mt-8 max-w-3xl text-[12.5px] leading-relaxed text-moss">{H.credit}</p>
+      </div>
+      {open !== null && <HomeDialog i={open} setI={setOpen} />}
     </section>
   )
 }
@@ -434,8 +440,8 @@ function Services() {
           </ol>
         </div>
         <figure className="relative mt-14 overflow-hidden rounded-[22px] bg-forest">
-          <img src={asset('images/lift-760.webp')} srcSet={`${asset('images/lift-760.webp')} 760w, ${asset('images/lift-1400.webp')} 1400w`} sizes="(min-width:1280px) 1216px, 92vw" width={1400} height={600} loading="lazy" decoding="async" alt={S.photoAlt} className="aspect-[16/10] w-full object-cover sm:aspect-[21/8]" />
-          <figcaption className="absolute bottom-3 left-3 rounded-full bg-forest-deep/85 px-3 py-1 text-[12px] font-medium text-stone">{c.illustrative}</figcaption>
+          <img src={asset('images/foyer-760.webp')} srcSet={`${asset('images/foyer-760.webp')} 760w, ${asset('images/foyer-1400.webp')} 1400w`} sizes="(min-width:1280px) 1216px, 92vw" width={1400} height={600} loading="lazy" decoding="async" alt={S.photoAlt} className="aspect-[16/10] w-full object-cover sm:aspect-[21/9]" />
+          <figcaption className="absolute bottom-3 left-3 right-3 w-fit rounded-lg bg-forest-deep/85 px-3 py-1.5 text-[12px] font-medium leading-snug text-stone">{S.photoCap}</figcaption>
         </figure>
         <div className="mt-10">
           <h3 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brass-ink">{S.whyTitle}</h3>
@@ -474,82 +480,6 @@ function Awards() {
   )
 }
 
-function Brief() {
-  const { c, lang } = useI18n<Content>()
-  const B = c.brief
-  const [type, setType] = useState(-1)
-  const [scope, setScope] = useState(-1)
-  const [when, setWhen] = useState(-1)
-  const [loc, setLoc] = useState('')
-  const [area, setArea] = useState('')
-  const [name, setName] = useState('')
-  const [company, setCompany] = useState('')
-  const [date, setDate] = useState('')
-  useEffect(() => { setDate(new Intl.DateTimeFormat(lang === 'ms' ? 'ms-MY' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kuala_Lumpur' }).format(new Date())) }, [lang])
-  const F = B.fields
-  const v = (x: string) => x.trim() || B.blank
-  const client = [name.trim(), company.trim()].filter(Boolean).join(', ')
-  const rows: [string, string][] = [
-    [F.project, type >= 0 ? B.types[type] : B.blank], [F.scope, scope >= 0 ? B.scopes[scope] : B.blank],
-    [F.loc, v(loc)], [F.area, area.trim() ? `${area.trim()} ${B.sqft}` : B.blank],
-    [F.when, when >= 0 ? B.whens[when] : B.blank], [F.client, v(client)],
-  ]
-  const msg = [B.msgHi, '', ...rows.filter(([, x]) => x !== B.blank).map(([k, x]) => `${k}: ${x}`), '', B.msgEnd].join('\n')
-  const mail = `mailto:${BIZ.email}?subject=${encodeURIComponent(`${B.subject}${type >= 0 ? ` – ${B.types[type]}` : ''}`)}&body=${encodeURIComponent(msg)}`
-  const pill = (on: boolean) => `tap inline-flex items-center justify-center rounded-full border px-3.5 text-[14px] font-medium transition ${on ? 'border-forest bg-forest text-stone' : 'border-forest/20 bg-paper text-forest hover:border-forest'}`
-  const group = (legend: string, opts: string[], val: number, set: (n: number) => void, nm: string, no: number) => (
-    <fieldset>
-      <legend className="step"><span className="mr-2 font-display italic text-brass-ink">0{no}</span>{legend}</legend>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {opts.map((t, i) => <label key={t} className={`radio ${pill(val === i)}`}><input type="radio" name={nm} className="sr-only" checked={val === i} onChange={() => set(i)} />{t}</label>)}
-      </div>
-    </fieldset>
-  )
-  return (
-    <section id="brief" className="bg-stone">
-      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
-        <div className="max-w-3xl"><Eyebrow>{B.eyebrow}</Eyebrow><h2 className="h2 mt-5">{B.title}</h2><p className="mt-4 max-w-2xl text-[16.5px] leading-relaxed text-moss">{B.sub}</p></div>
-        <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14">
-          <form className="space-y-7 lg:col-span-7" onSubmit={(e) => e.preventDefault()}>
-            {group(B.type, B.types, type, setType, 'type', 1)}
-            {group(B.scope, B.scopes, scope, setScope, 'scope', 2)}
-            {group(B.when, B.whens, when, setWhen, 'when', 3)}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-              <div className="min-w-0"><label htmlFor="loc" className="step">{B.loc}</label><input id="loc" value={loc} onChange={(e) => setLoc(e.target.value.slice(0, 60))} placeholder={B.locPh} className="field mt-2.5" /></div>
-              <div className="min-w-0"><label htmlFor="area" className="step">{B.area}</label><input id="area" value={area} inputMode="numeric" onChange={(e) => setArea(e.target.value.replace(/[^\d,.]/g, '').slice(0, 9))} placeholder={B.areaPh} className="field mt-2.5" /></div>
-              <div className="min-w-0"><label htmlFor="bname" className="step">{B.name}</label><input id="bname" value={name} onChange={(e) => setName(e.target.value.slice(0, 50))} autoComplete="name" className="field mt-2.5" /></div>
-              <div className="min-w-0"><label htmlFor="company" className="step">{B.company}</label><input id="company" value={company} onChange={(e) => setCompany(e.target.value.slice(0, 60))} autoComplete="organization" className="field mt-2.5" /></div>
-            </div>
-          </form>
-          <div className="lg:col-span-5">
-            <div className="lg:sticky lg:top-24">
-              <div className="titleblock bg-paper text-forest" aria-live="polite">
-                <div className="grid grid-cols-[1fr_auto] border-b-2 border-forest">
-                  <div className="p-4 sm:p-5"><Logo /></div>
-                  <div className="flex flex-col justify-center border-l-2 border-forest px-4 text-right sm:px-5"><span className="tb-k">{F.sheet}</span><span className="font-display text-[20px] leading-none">BRIEF-01</span></div>
-                </div>
-                <dl className="grid grid-cols-2">
-                  {rows.map(([k, x], i) => (
-                    <div key={k} className={`min-h-[74px] min-w-0 border-b border-forest/30 p-4 ${i % 2 ? 'border-l border-forest/30' : ''}`}>
-                      <dt className="tb-k">{k}</dt><dd className={`mt-1.5 break-words text-[15px] font-medium leading-snug ${x === B.blank ? 'text-moss/60' : ''}`}>{x}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <div className="flex items-center justify-between gap-3 px-4 py-3 text-[12.5px]"><span><span className="tb-k mr-2">{F.date}</span>{date}</span><span className="text-moss">B&amp;N Design Associate</span></div>
-              </div>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <a href={wa(msg)} target="_blank" rel="noopener" className="tap lift flex h-[52px] items-center justify-center gap-2 rounded-full bg-forest px-5 text-[15.5px] font-semibold text-stone hover:bg-forest-3"><WaIcon />{B.wa}</a>
-                <a href={mail} className="tap lift flex h-[52px] items-center justify-center gap-2 rounded-full border border-forest/30 bg-paper px-5 text-[15.5px] font-semibold text-forest hover:border-forest">{B.mail}</a>
-              </div>
-              <p className="mt-3 text-center text-[13px] text-moss">{B.hint}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function Contact() {
   const { c } = useI18n<Content>()
   const C = c.contact
@@ -560,7 +490,12 @@ function Contact() {
         <div className="lg:col-span-7">
           <Eyebrow dark>{C.eyebrow}</Eyebrow>
           <h2 className="h2 mt-5 text-stone">{C.title}</h2>
-          <div className="mt-6"><StatusPill dark /></div>
+          <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-stone/85">{C.sub}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <a href={wa(c.waMsg)} target="_blank" rel="noopener" className="tap lift inline-flex h-[50px] items-center justify-center gap-2 rounded-full bg-brass px-6 text-[15.5px] font-semibold text-forest-deep hover:bg-brass-light"><WaIcon />{c.waCta}</a>
+            <a href={`mailto:${BIZ.email}?subject=${encodeURIComponent(C.subject)}`} className="tap inline-flex h-[50px] items-center justify-center rounded-full border border-stone/25 px-6 text-[15.5px] font-semibold text-stone hover:border-brass">{c.email}</a>
+            <StatusPill dark />
+          </div>
           <dl className="mt-10 grid gap-x-8 gap-y-7 border-t border-stone/12 pt-8 sm:grid-cols-2">
             <div><dt className="dt">{C.office}</dt><dd className="mt-1"><a href={`tel:${BIZ.officeTel}`} className={link}><PhoneIcon className="h-4 w-4 text-brass" />{BIZ.office}</a></dd></div>
             <div><dt className="dt">{C.mobile}</dt><dd className="mt-1"><a href={wa(c.waMsg)} target="_blank" rel="noopener" className={link}><WaIcon className="h-4 w-4 text-brass" />{BIZ.mobile}</a></dd></div>
@@ -571,21 +506,16 @@ function Contact() {
           </dl>
         </div>
         <div className="lg:col-span-5">
-          <a href={BIZ.maps} target="_blank" rel="noopener" className="group block overflow-hidden rounded-[22px] bg-forest-2 ring-1 ring-stone/10">
-            <svg viewBox="0 0 520 320" className="h-auto w-full" aria-hidden>
-              <rect width="520" height="320" fill="#1A3F37" />
-              <g stroke="#24524A" strokeWidth="1"><path d="M0 40H520M0 80H520M0 120H520M0 160H520M0 200H520M0 240H520M0 280H520M40 0V320M80 0V320M120 0V320M160 0V320M200 0V320M240 0V320M280 0V320M320 0V320M360 0V320M400 0V320M440 0V320M480 0V320" /></g>
-              <g stroke="#2F6155" strokeWidth="14" fill="none" strokeLinecap="round"><path d="M-10 220 C140 190 300 240 530 180" /><path d="M170 -10 L230 330" /></g>
-              <g fill="#24524A" stroke="#2F6155">{[[260, 80], [330, 80], [400, 80], [260, 140], [330, 140]].map(([x, y]) => <rect key={`${x}${y}`} x={x} y={y} width="56" height="42" rx="3" />)}</g>
-              <rect x="330" y="140" width="56" height="42" rx="3" fill="#C9A15A" />
-              <text x="358" y="167" textAnchor="middle" fontSize="16" fontStyle="italic" fontFamily="Newsreader, serif" fill="#0E2420">38-1</text>
-              <text x="26" y="296" fill="#A9BDB5" fontSize="12" fontFamily="Geist, sans-serif" letterSpacing="2.5">RAMPAI BUSINESS PARK · 53300</text>
-            </svg>
-            <div className="flex items-center justify-between gap-4 p-5">
-              <div><p className="font-display text-[20px]">B&amp;N Design Associate</p><p className="text-[13.5px] text-moss-dark">38-1, Jalan Rampai Niaga 4</p></div>
-              <span className="shrink-0 rounded-full bg-brass px-3 py-1.5 text-[13px] font-semibold text-forest-deep transition group-hover:bg-stone">{C.maps} ↗</span>
-            </div>
-          </a>
+          <figure>
+            <a href={BIZ.maps} target="_blank" rel="noopener" className="group relative block overflow-hidden rounded-[22px] ring-1 ring-stone/15">
+              <img src={asset('images/map-600.webp')} srcSet={`${asset('images/map-600.webp')} 600w, ${asset('images/map-900.webp')} 900w`} sizes="(min-width:1024px) 460px, 92vw" width={900} height={560} loading="lazy" decoding="async" alt={C.mapAlt} className="aspect-[900/560] w-full object-cover" />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full" aria-hidden>
+                <svg viewBox="0 0 32 42" className="h-11 w-auto drop-shadow-md"><path d="M16 0C7.2 0 0 7 0 15.7 0 27.5 16 42 16 42s16-14.5 16-26.3C32 7 24.8 0 16 0z" fill="#0E2420" /><circle cx="16" cy="15.5" r="6" fill="#C9A15A" /></svg>
+              </span>
+              <span className="absolute bottom-3 right-3 rounded-full bg-brass px-3.5 py-2 text-[13px] font-semibold text-forest-deep shadow transition group-hover:bg-stone">{C.maps} ↗</span>
+            </a>
+            <figcaption className="mt-2 text-[12px] text-moss-dark">{C.mapCredit}</figcaption>
+          </figure>
           <div className="mt-4 flex flex-wrap gap-x-6">
             <a href={BIZ.directions} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-medium text-brass-light underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.directions} ↗</a>
             <a href={BIZ.facebook} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center text-[15px] font-medium text-brass-light underline decoration-brass/40 underline-offset-4 hover:decoration-brass">{C.facebook} ↗</a>
@@ -620,26 +550,37 @@ function Faq() {
 
 function Footer() {
   const { c } = useI18n<Content>()
+  const F = c.footer
+  const h = 'text-[11.5px] font-semibold uppercase tracking-[0.2em] text-brass'
+  const l = 'inline-flex min-h-[36px] items-center text-stone/80 hover:text-brass-light'
   return (
     <footer className="bg-forest-night text-stone">
-      <div className="mx-auto max-w-7xl px-5 pb-28 pt-14 sm:px-8 lg:pb-12">
-        <div className="flex flex-col justify-between gap-10 lg:flex-row">
-          <div><Logo light /><p className="mt-4 text-[14.5px] text-stone/75">{c.footer.tagline}</p></div>
-          <ul className="grid gap-x-10 gap-y-1 text-[15px] sm:grid-cols-2">
-            <li><a href={`tel:${BIZ.officeTel}`} className="inline-flex min-h-[44px] items-center hover:text-brass">{BIZ.office}</a></li>
-            <li><a href={wa(c.waMsg)} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center gap-2 hover:text-brass"><WaIcon className="h-4 w-4" />{BIZ.mobile}</a></li>
-            <li><a href={`mailto:${BIZ.email}`} className="inline-flex min-h-[44px] items-center break-all hover:text-brass">{BIZ.email}</a></li>
-            <li><a href={BIZ.facebook} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center hover:text-brass">Facebook ↗</a></li>
-            <li className="sm:col-span-2"><a href={BIZ.maps} target="_blank" rel="noopener" className="inline-flex min-h-[44px] items-center hover:text-brass">{BIZ.address} ↗</a></li>
-          </ul>
-          <a href="#top" className="tap inline-flex items-center gap-2 self-start rounded-full border border-stone/20 px-5 text-sm font-semibold transition hover:border-brass hover:text-brass">{c.footer.toTop} <span aria-hidden>↑</span></a>
+      <div className="mx-auto max-w-7xl px-5 pb-28 pt-14 sm:px-8 lg:pb-10">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-12">
+          <div className="col-span-2 lg:col-span-5">
+            <Logo light />
+            <p className="mt-4 max-w-sm text-[14.5px] leading-relaxed text-stone/75">{BIZ.name}<br />{F.tagline}</p>
+          </div>
+          <nav aria-label={F.explore} className="lg:col-span-2">
+            <h2 className={h}>{F.explore}</h2>
+            <ul className="mt-3 text-[14.5px]">{c.nav.map(([id, t]) => <li key={id}><a href={`#${id}`} className={l}>{t}</a></li>)}</ul>
+          </nav>
+          <div className="col-span-2 sm:col-span-1 lg:col-span-5">
+            <h2 className={h}>{F.reach}</h2>
+            <ul className="mt-3 text-[14.5px]">
+              <li><a href={BIZ.maps} target="_blank" rel="noopener" className={`${l} max-w-xs`}>{BIZ.address}</a></li>
+              <li className="py-1.5 text-stone/60">{c.contact.hoursText}</li>
+              <li><a href={`tel:${BIZ.officeTel}`} className={l}>{BIZ.office}</a> <span className="text-stone/40">·</span> <a href={wa(c.waMsg)} target="_blank" rel="noopener" className={l}>{BIZ.mobile}</a></li>
+              <li><a href={`mailto:${BIZ.email}`} className={`${l} break-all`}>{BIZ.email}</a></li>
+              <li><a href={BIZ.facebook} target="_blank" rel="noopener" className={l}>Facebook ↗</a></li>
+            </ul>
+          </div>
         </div>
-        <p className="mt-12 text-[12.5px] leading-relaxed text-stone/70">{c.footer.note}</p>
-        <div className="mt-6 flex flex-col gap-3 border-t border-stone/10 pt-6 text-[13px] text-stone/75 sm:flex-row sm:items-center sm:justify-between">
-          <p>{c.footer.pitch}</p>
-          <a href={PITCH_WA} target="_blank" rel="noopener" className="tap inline-flex shrink-0 items-center gap-2 font-semibold text-brass hover:text-stone"><WaIcon className="h-4 w-4" />{c.footer.pitchLink}</a>
+        <div className="mt-12 flex flex-col gap-2 border-t border-stone/10 pt-6 text-[12.5px] text-stone/60 sm:flex-row sm:flex-wrap sm:justify-between">
+          <p>© {new Date().getFullYear()} {BIZ.name} {F.rights}</p>
+          <p>{F.note}</p>
         </div>
-        <p className="mt-4 text-[12px] text-stone/60">© {new Date().getFullYear()} {BIZ.name} {c.footer.rights}</p>
+        <p className="mt-4 text-[12px] leading-relaxed text-stone/60">{F.pitch} <a href={PITCH_WA} target="_blank" rel="noopener" className="inline-flex min-h-[24px] items-center font-semibold text-stone/80 underline decoration-stone/30 underline-offset-2 hover:text-brass-light">{F.pitchLink}</a></p>
       </div>
     </footer>
   )
@@ -658,7 +599,7 @@ function MobileBar() {
     <nav aria-label={c.a11y.bar} aria-hidden={!show} data-fab
       className={`fixed inset-x-0 bottom-0 z-30 border-t border-stone/10 bg-forest-deep/95 px-3 pb-[max(.6rem,env(safe-area-inset-bottom))] pt-2.5 backdrop-blur transition duration-300 lg:hidden ${show ? '' : 'pointer-events-none translate-y-full opacity-0'}`}>
       <div className="mx-auto grid max-w-md grid-cols-[1fr_1.35fr_auto] gap-2">
-        <a href="#brief" tabIndex={t} className="inline-flex h-12 items-center justify-center rounded-full border border-stone/25 text-[15px] font-semibold text-stone">{c.briefCta}</a>
+        <a href={`mailto:${BIZ.email}`} tabIndex={t} className="inline-flex h-12 items-center justify-center rounded-full border border-stone/25 text-[15px] font-semibold text-stone">{c.email}</a>
         <a href={wa(c.waMsg)} target="_blank" rel="noopener" tabIndex={t} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brass text-[15px] font-semibold text-forest-deep"><WaIcon />{c.waCta}</a>
         <a href={`tel:${BIZ.officeTel}`} tabIndex={t} aria-label={`${c.call} ${BIZ.office}`} className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-stone text-forest-deep"><PhoneIcon className="h-[18px] w-[18px]" /></a>
       </div>
@@ -682,10 +623,10 @@ export default function App() {
       <main id="main" tabIndex={-1} className="outline-none">
         <Hero />
         <Work />
+        <Homes />
         <Projects />
         <Services />
         <Awards />
-        <Brief />
         <Contact />
         <Faq />
       </main>

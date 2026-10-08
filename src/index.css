@@ -16,13 +16,7 @@ a, button, label { -webkit-tap-highlight-color: transparent; }
 .eyebrow { @apply inline-flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.22em]; }
 .h2 { font-family: Newsreader, Georgia, serif; font-weight: 400; line-height: 1.02; letter-spacing: -0.02em; font-size: clamp(2.2rem, 5.2vw, 4.1rem); }
 .h2 em { font-style: italic; }
-.step { @apply block text-[14.5px] font-semibold text-forest; }
 .dt { @apply text-[11.5px] font-semibold uppercase tracking-[0.18em] text-brass; }
-.radio { cursor: pointer; }
-.radio:has(input:focus-visible) { outline: 2px solid #7A5A22; outline-offset: 3px; }
-.field { @apply block min-h-[48px] w-full rounded-lg border border-forest/20 bg-paper px-4 text-[16px] text-forest transition; }
-.field:hover, .field:focus { border-color: #12302A; }
-.field::placeholder { color: #4F5C56; opacity: .8; }
 
 /* rail (swipe carousel) */
 .rail { scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
@@ -33,15 +27,12 @@ a, button, label { -webkit-tap-highlight-color: transparent; }
 
 /* hero */
 .hero-glow { background: radial-gradient(60% 70% at 85% 30%, rgba(201,161,90,.14), transparent 70%), radial-gradient(50% 60% at 0% 100%, rgba(36,82,74,.55), transparent 70%); }
-.amp { font-family: Newsreader, Georgia, serif; font-style: italic; line-height: .8; color: #C9A15A; opacity: .07; }
 
 .award { @apply shrink-0 rounded-full px-2.5 py-1 text-[11.5px] font-semibold uppercase tracking-[0.12em]; }
 .award-platinum { background: #DAD9D2; color: #12302A; }
 .award-gold { background: #C9A15A; color: #12302A; }
 .award-silver { background: #C3C8C4; color: #12302A; }
 
-.titleblock { border: 2px solid #12302A; box-shadow: 10px 10px 0 rgba(18,48,42,.10); }
-.tb-k { @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-brass-ink; }
 
 .plate-in { animation: plateIn .7s cubic-bezier(.2,.7,.2,1); }
 @keyframes plateIn { from { opacity: 0; transform: scale(1.025); } }
@@ -65,6 +56,11 @@ summary:hover .faq-i { border-color: #12302A; }
 
 h1, h2, h3, .h2, summary { text-wrap: balance; }
 p, li, blockquote, dd { text-wrap: pretty; }
+html.has-dialog { overflow: hidden; }
+.pd { width: min(1080px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: 18px; background: #F7F4EE; color: #12302A; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); overflow: hidden; position: fixed; }
+.pd::backdrop { background: rgba(10,27,24,.8); }
+.pd[open] { animation: pd-in .25s ease; }
+@keyframes pd-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .has-dialog [data-fab] { opacity: 0 !important; pointer-events: none !important; transform: translateY(100%) !important; }
 
 @media (prefers-reduced-motion: reduce) {

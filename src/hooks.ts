@@ -57,3 +57,15 @@ export function useSwipe(onSwipe: (dir: 1 | -1) => void) {
     },
   }
 }
+
+/** true once the window load event has fired (used to keep below-fold images off the critical path) */
+export function useWindowLoaded() {
+  const [loaded, setLoaded] = useState(() => typeof document !== 'undefined' && document.readyState === 'complete')
+  useEffect(() => {
+    if (loaded) return
+    const on = () => setLoaded(true)
+    window.addEventListener('load', on, { once: true })
+    return () => window.removeEventListener('load', on)
+  }, [loaded])
+  return loaded
+}

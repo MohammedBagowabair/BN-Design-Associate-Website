@@ -10,7 +10,7 @@ Live: https://mohammedbagowabair.github.io/BN-Design-Associate-Website/ · Malay
 - Project-brief builder styled as a drawing title block → WhatsApp or email
 - Contact with office line, mobile/WhatsApp, email, live office-hours status, bilingual FAQ and 404
 
-Copy, projects, clients and awards are taken from bnndesign.com. The two photos are illustrative Unsplash images, not B&N projects — to be replaced with B&N's own project photography.
+Copy, projects, clients and awards are taken from bnndesign.com. Hotel photos are Mercure Miri City Centre's own (credited on the page); residential photos are B&N's own project photos (bnndesign.com watermark) from their public directory listing. Map © OpenStreetMap contributors. No stock images.
 
 ```bash
 npm ci
